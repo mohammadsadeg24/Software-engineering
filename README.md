@@ -16,7 +16,6 @@ This is a simple e-commerce web application designed as a project for **Software
 ```
 narm2/
 ├── manage.py                  # Django entry point
-├── requirements.txt           # Python dependencies
 ├── honey-html/                # Frontend assets (HTML, CSS, JS, fonts)
 │   ├── *.html                 # Pages like index, about, contact, shop
 │   ├── css/                   # Styling files including Bootstrap
