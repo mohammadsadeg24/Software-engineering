@@ -1,12 +1,13 @@
 
-# 🍯 Honey Shop – Django + HTML + SQLite + Bootstrap
+# 🍯 Honey Shop – Django + HTML + JavaScript + Bootstrap
 
 This is a simple e-commerce web application designed as a project for **Software Engineering 2**. It simulates a basic honey store and is built with:
 
 - 🐍 **Django** for backend logic and admin panel
 - 🗃️ **SQLite** as the default database
 - 🎨 **HTML/CSS + Bootstrap** for frontend UI
-- 🌐 Responsive design ready for deployment
+- ⚙️ **JavaScript + jQuery + custom scripts** for interactivity
+- 🌐 Responsive design with modern components
 
 ---
 
@@ -15,55 +16,60 @@ This is a simple e-commerce web application designed as a project for **Software
 ```
 narm2/
 ├── manage.py                  # Django entry point
-├── honey-html/                # Frontend assets (HTML, CSS, fonts)
+├── requirements.txt           # Python dependencies
+├── honey-html/                # Frontend assets (HTML, CSS, JS, fonts)
 │   ├── *.html                 # Pages like index, about, contact, shop
 │   ├── css/                   # Styling files including Bootstrap
+│   ├── js/                    # JavaScript (bootstrap.js, custom.js, jquery.js)
 │   ├── fonts/                 # FontAwesome and others
-│   └── images/                # Images used in UI (if any)
+│   └── images/                # Product and page images (if any)
 ├── yourprojectname/           # Django project config (settings, urls)
-└── shop/                      # Django app for core logic (models, views)
+└── shop/                      # Django app for models, views, templates
 ```
 
 ---
 
 ## 🚀 Features
 
-- Static frontend pages: Home, About, Contact, Shop, Product Quality
-- Responsive layout with modern styling
-- Ready-to-integrate backend using Django
-- SQLite-based development database (default)
-- Admin interface for easy data management
+- Static pages: Home, About Us, Contact, Shop, Product Quality
+- Responsive layout using Bootstrap
+- Custom interactivity using `custom.js`
+- Enhanced UI elements via `jQuery` and Bootstrap JS
+- Django backend integration ready
+- SQLite default database for development
 
 ---
 
 ## 🧠 How It Works
 
 ### 🔙 Backend (Django)
-- Django views render templates or handle data endpoints
-- Models and migrations manage database structure
-- Can be extended with login, cart, order management
+- Views and URLs serve templates or data
+- Models define database schema
+- Admin panel available for managing content
 
-### 🖼️ Frontend (HTML + Bootstrap)
-- Clean and mobile-friendly HTML templates
-- Built with modular CSS and custom fonts
-- HTML files reside in the `honey-html/` directory
+### 🖼️ Frontend (HTML + Bootstrap + JS)
+- HTML templates in `honey-html/`
+- CSS styling with `bootstrap.min.css`
+- JS interaction via:
+  - `bootstrap.min.js` – modal, dropdown, etc.
+  - `jquery.min.js` – DOM manipulation
+  - `custom.js` – project-specific scripts
 
 ---
 
 ## 🔧 How to Run the Project
 
 ### 🔹 Prerequisites
-- Python 3.10+ installed
-- `pip` package manager
+- Python 3.10+
+- `pip` installed
 
 ### 🔹 Setup Instructions
 
 ```bash
-# Clone the repo
 git clone https://github.com/mohammadsadeg24/Software-engineering.git
 cd Software-engineering/narm2
 
-# Create virtual environment (optional but recommended)
+# Create virtual environment
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 
@@ -74,25 +80,23 @@ pip install -r requirements.txt
 python manage.py runserver
 ```
 
-Then open your browser at: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+Visit: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
 ---
 
 ## 🛠 Django Admin Panel
 
-Create a superuser to manage content via the admin UI:
+Create superuser:
 
 ```bash
 python manage.py createsuperuser
 ```
 
-Then access: [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin)
+Admin: [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin)
 
 ---
 
-## 📄 .gitignore
-
-Example entries:
+## 📄 .gitignore (Suggested)
 
 ```
 __pycache__/
@@ -100,7 +104,7 @@ __pycache__/
 *.db
 .env
 /static/
-/media/
+media/
 ```
 
 ---
