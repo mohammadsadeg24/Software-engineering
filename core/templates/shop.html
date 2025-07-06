@@ -1,0 +1,22 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>فروشگاه</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <h1>تمام محصولات</h1>
+    <div class="product-list">
+        {% for product in products %}
+        <div class="product">
+            <h3>{{ product.title }}</h3>
+            <img src="{{ product.image.url }}" alt="{{ product.title }}" width="200">
+            <p>{{ product.description }}</p>
+            <strong>{{ product.price }} تومان</strong>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
