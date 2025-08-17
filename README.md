@@ -14,16 +14,17 @@ This is a simple e-commerce web application designed as a project for **Software
 ## 📁 Project Structure Overview
 
 ```
-narm2/
-├── manage.py                  # Django entry point
-├── honey-html/                # Frontend assets (HTML, CSS, JS, fonts)
+SOFTWARE-ENGINEERING/
+├── backend/                # Frontend assets (HTML, CSS, JS, fonts)
+│   ├── core/           # Django project config (settings, urls)
+│   ├── shop/                      # Django app for models, views, templates
+│   └── manage.py                  # Django entry point
+├── frontend/                # Frontend assets (HTML, CSS, JS, fonts)
 │   ├── *.html                 # Pages like index, about, contact, shop
 │   ├── css/                   # Styling files including Bootstrap
 │   ├── js/                    # JavaScript (bootstrap.js, custom.js, jquery.js)
 │   ├── fonts/                 # FontAwesome and others
 │   └── images/                # Product and page images (if any)
-├── yourprojectname/           # Django project config (settings, urls)
-└── shop/                      # Django app for models, views, templates
 ```
 
 ---
