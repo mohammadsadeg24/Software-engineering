@@ -6,7 +6,7 @@ This is a simple e-commerce web application designed as a project for **Software
 - 🐍 **Django** for backend logic and admin panel
 - 🗃️ **SQLite** as the default database
 - 🎨 **HTML/CSS + Bootstrap** for frontend UI
-- ⚙️ **JavaScript + jQuery + custom scripts** for interactivity
+- ⚙️ **JavaScript + custom scripts** for interactivity
 - 🌐 Responsive design with modern components
 
 ---
@@ -18,23 +18,18 @@ SOFTWARE-ENGINEERING/
 ├── backend/                # Frontend assets (HTML, CSS, JS, fonts)
 │   ├── core/           # Django project config (settings, urls)
 │   ├── shop/                      # Django app for models, views, templates
+│       └── *.html                 # Pages like main, profile
 │   └── manage.py                  # Django entry point
-├── frontend/                # Frontend assets (HTML, CSS, JS, fonts)
-│   ├── *.html                 # Pages like index, about, contact, shop
-│   ├── css/                   # Styling files including Bootstrap
-│   ├── js/                    # JavaScript (bootstrap.js, custom.js, jquery.js)
-│   ├── fonts/                 # FontAwesome and others
-│   └── images/                # Product and page images (if any)
+
 ```
 
 ---
 
 ## 🚀 Features
 
-- Static pages: Home, About Us, Contact, Shop, Product Quality
+- Static pages: Main, Profile
 - Responsive layout using Bootstrap
-- Custom interactivity using `custom.js`
-- Enhanced UI elements via `jQuery` and Bootstrap JS
+- Enhanced UI elements via  Bootstrap JS
 - Django backend integration ready
 - SQLite default database for development
 
@@ -48,12 +43,11 @@ SOFTWARE-ENGINEERING/
 - Admin panel available for managing content
 
 ### 🖼️ Frontend (HTML + Bootstrap + JS)
-- HTML templates in `honey-html/`
+- HTML templates in `/backend/template/`
 - CSS styling with `bootstrap.min.css`
 - JS interaction via:
   - `bootstrap.min.js` – modal, dropdown, etc.
-  - `jquery.min.js` – DOM manipulation
-  - `custom.js` – project-specific scripts
+
 
 ---
 
@@ -67,11 +61,11 @@ SOFTWARE-ENGINEERING/
 
 ```bash
 git clone https://github.com/mohammadsadeg24/Software-engineering.git
-cd Software-engineering/narm2
+cd Software-engineering/narm2/backend
 
 # Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+pipenv install 
+pipenv shell
 
 # Install dependencies
 pip install -r requirements.txt

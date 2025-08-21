@@ -10,6 +10,9 @@ djangorestframework = "*"
 pillow = "*"
 sqlparse = "==0.5.3"
 pymongo = "*"
+django-cors-headers = "*"
+python-dotenv = "*"
+djangorestframework-simplejwt = "*"
 
 [dev-packages]
 

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>User Profile - Pure Honey Shop</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --honey-gold: #FFB74D;
+            --honey-dark: #E65100;
+            --honey-light: #FFF3C4;
+            --brown-dark: #5D4037;
+            --green-natural: #4CAF50;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, var(--honey-light) 0%, #FFFFFF 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--honey-gold) 0%, var(--honey-dark) 100%);
+            padding: 1rem 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white !important;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .navbar-nav .nav-link {
+            color: white !important;
+            font-weight: 500;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: var(--honey-light) !important;
+            transform: translateY(-2px);
+        }
+
+        .profile-container {
+            max-width: 800px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-icon {
+            font-size: 5rem;
+            color: var(--honey-gold);
+            margin-bottom: 10px;
+        }
+
+        .profile-header h2 {
+            font-weight: bold;
+            color: var(--brown-dark);
+        }
+
+        .profile-info {
+            font-size: 1.1rem;
+        }
+
+        .profile-info .row {
+            margin-bottom: 15px;
+        }
+
+        .profile-info strong {
+            color: var(--honey-dark);
+            width: 150px;
+            display: inline-block;
+        }
+
+        .profile-info span {
+            color: #666;
+        }
+
+        .edit-btn {
+            background: var(--honey-gold);
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 15px;
+            padding: 10px 25px;
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn:hover {
+            background: var(--honey-dark);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="index.html">
+                    <i class="fas fa-honeycomb"></i> Pure Honey
+                </a>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html">Home</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container profile-container">
+        <div class="profile-header">
+            <i class="fas fa-user-circle profile-icon"></i>
+            <h2>User Profile</h2>
+            <p class="text-muted">Manage your account information here.</p>
+        </div>
+
+        <div class="profile-info">
+            <div class="row">
+                <div class="col-12">
+                    <strong>ID:</strong> <span id="profile-id">12345</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <strong>Username:</strong> <span id="profile-username">john_doe</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <strong>Email:</strong> <span id="profile-email">johndoe@example.com</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <strong>First Name:</strong> <span id="profile-first-name">John</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <strong>Last Name:</strong> <span id="profile-last-name">Doe</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <strong>Phone Number:</strong> <span id="profile-phone">+1 555-123-4567</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <strong>Password:</strong> <span id="profile-password">***********</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <button class="btn edit-btn">
+                <i class="fas fa-edit"></i> Edit Profile
+            </button>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // In a real application, you would fetch user data from a server and populate these fields.
+        // For demonstration, these values are hardcoded.
+        // const userData = {
+        //     id: "12345",
+        //     username: "john_doe",
+        //     email: "johndoe@example.com",
+        //     first_name: "John",
+        //     last_name: "Doe",
+        //     phone_number: "+1 555-123-4567",
+        //     password_hash: "secret_hash"
+        // };
+
+        // document.getElementById('profile-id').textContent = userData.id;
+        // document.getElementById('profile-username').textContent = userData.username;
+        // document.getElementById('profile-email').textContent = userData.email;
+        // document.getElementById('profile-first-name').textContent = userData.first_name;
+        // document.getElementById('profile-last-name').textContent = userData.last_name;
+        // document.getElementById('profile-phone').textContent = userData.phone_number;
+        // The password hash should NEVER be displayed, so we use a placeholder.
+    </script>
+</body>
+</html>
