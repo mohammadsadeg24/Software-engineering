@@ -4,3 +4,6 @@ products -- different weight for honey in different sizes for different product.
 delete the newsletter cause we don't have any mail server.
 uml domain class diagrm
 
+
+
+mongosh - 
