@@ -1,7 +1,7 @@
 # Created by https://www.gitignore.io
-.env
-Pipfile
-Pipfile.lock
+backend/.env
+backend/Pipfile
+backend/Pipfile.lock
 ### OSX ###
 .DS_Store
 .AppleDouble
