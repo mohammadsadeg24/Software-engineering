@@ -1,23 +1,11 @@
-# honey_api/urls.py
 from django.urls import path
 from . import views
 
 urlpatterns = [
-    # Authentication
-    path('auth/login/', views.login_view, name='login'),
-    path('auth/register/', views.register_view, name='register'),
-    path('auth/logout/', views.logout_view, name='logout'),
-    
-    # User Profile
-    path('profile/', views.get_profile, name='get_profile'),
-    path('profile/update/', views.update_profile, name='update_profile'),
-    
-    # Addresses
-    path('addresses/', views.get_addresses, name='get_addresses'),
-    path('addresses/create/', views.create_address, name='create_address'),
-    path('addresses/<int:address_id>/update/', views.update_address, name='update_address'),
-    path('addresses/<int:address_id>/delete/', views.delete_address, name='delete_address'),
-    
+
+    # Home
+    # path('categories/', views.category_list, name='category_list'),
+
     # Categories
     path('categories/', views.category_list, name='category_list'),
     path('categories/create/', views.create_category, name='create_category'),
@@ -41,24 +29,5 @@ urlpatterns = [
     # Orders
     path('orders/', views.get_orders, name='get_orders'),
     path('orders/create/', views.create_order, name='create_order'),
-    path('orders/<str:order_id>/', views.get_order_detail, name='get_order_detail'),
+    path('orders/<str:order_id>/', views.get_order_detail, name='get_order_detail')
 ]
-
-# Main project urls.py
-"""
-from django.contrib import admin
-from django.urls import path, include
-from django.conf import settings
-from django.conf.urls.static import static
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include('honey_api.urls')),
-    # Add path for serving your frontend if needed
-    # path('', TemplateView.as_view(template_name='index.html'), name='home'),
-]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-"""

@@ -104,7 +104,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'honey_shop.urls'
+ROOT_URLCONF = 'honey_site.urls'
 
 TEMPLATES = [
     {
@@ -122,7 +122,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'honey_shop.wsgi.application'
+WSGI_APPLICATION = 'honey_site.wsgi.application'
 
 # SQLite Database (for auth and admin)
 DATABASES = {
@@ -136,7 +136,7 @@ DATABASES = {
 MONGODB_SETTINGS = {
     'host': config('MONGODB_HOST', default='localhost'),
     'port': config('MONGODB_PORT', default=27017, cast=int),
-    'db_name': config('MONGODB_DB_NAME', default='honey_shop'),
+    'db_name': config('MONGODB_DB_NAME', default='honey_site'),
     'username': config('MONGODB_USERNAME', default=''),
     'password': config('MONGODB_PASSWORD', default=''),
 }
@@ -176,3 +176,5 @@ REST_FRAMEWORK = {
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'core.User'
