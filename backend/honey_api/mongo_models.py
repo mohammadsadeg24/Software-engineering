@@ -1,9 +1,10 @@
-# honey_api/mongo_models.py
-from db.mongodb import mongodb, get_object_id, serialize_mongo_doc
-from bson import ObjectId
-from datetime import datetime
+from mongodb_connector import mongodb
 from django.utils.text import slugify
+from datetime import datetime
 import uuid
+
+from honey_api.utils import get_object_id
+from honey_api.serializer import mongo_serializer
 
 class BaseMongoModel:
     def __init__(self, collection_name):
@@ -19,7 +20,7 @@ class BaseMongoModel:
     
     def find_by_id(self, doc_id):
         """Find document by ID"""
-        return serialize_mongo_doc(
+        return mongo_serializer(
             self.collection.find_one({"_id": get_object_id(doc_id)})
         )
     
@@ -32,7 +33,7 @@ class BaseMongoModel:
             cursor = cursor.sort(sort)
         
         cursor = cursor.skip(skip).limit(limit)
-        return serialize_mongo_doc(list(cursor))
+        return mongo_serializer(list(cursor))
     
     def update_by_id(self, doc_id, update_data):
         """Update document by ID"""
@@ -63,19 +64,10 @@ class CategoryManager(BaseMongoModel):
         return self.create(data)
     
     def get_by_slug(self, slug):
-        """Get category by slug"""
-        return serialize_mongo_doc(
+        return mongo_serializer(
             self.collection.find_one({"slug": slug})
         )
     
-    def get_children(self, parent_id):
-        """Get child categories"""
-        return self.find_all({"parent_id": get_object_id(parent_id)})
-    
-    def get_root_categories(self):
-        """Get root categories (no parent)"""
-        return self.find_all({"parent_id": None})
-
 class ProductManager(BaseMongoModel):
     def __init__(self):
         super().__init__('products')
@@ -107,12 +99,6 @@ class ProductManager(BaseMongoModel):
         
         return slug
     
-    def get_by_slug(self, slug):
-        """Get product by slug"""
-        return serialize_mongo_doc(
-            self.collection.find_one({"slug": slug})
-        )
-    
     def get_by_category(self, category_id, limit=20, skip=0):
         """Get products by category"""
         return self.find_all(
@@ -130,7 +116,7 @@ class ProductManager(BaseMongoModel):
                 "status": "active"
             }
         ).limit(limit)
-        return serialize_mongo_doc(list(cursor))
+        return mongo_serializer(list(cursor))
     
     def add_variant(self, product_id, variant_data):
         """Add variant to product"""
@@ -155,7 +141,7 @@ class ReviewManager(BaseMongoModel):
             raise ValueError("User has already reviewed this product")
         
         data = {
-            'user_id': int(user_id),  # Django user ID
+            'user_id': int(user_id),  
             'product_id': get_object_id(product_id),
             'rating': int(rating),
             'comment': comment,
@@ -191,7 +177,6 @@ class ReviewManager(BaseMongoModel):
             return {"average_rating": 0, "total_reviews": 0}
         
         summary = result[0]
-        # Count ratings by value
         rating_distribution = {}
         for rating in summary.get('rating_counts', []):
             rating_distribution[rating] = rating_distribution.get(rating, 0) + 1
@@ -219,7 +204,7 @@ class CartManager(BaseMongoModel):
             cart_id = self.create(cart_data)
             cart = self.find_by_id(cart_id)
         else:
-            cart = serialize_mongo_doc(cart)
+            cart = mongo_serializer(cart)
         
         return cart
     
@@ -227,7 +212,6 @@ class CartManager(BaseMongoModel):
         """Add item to cart"""
         cart = self.get_or_create_cart(user_id)
         
-        # Check if item already exists in cart
         item_exists = False
         for item in cart['items']:
             if (item['product_id'] == product_id and 
@@ -245,7 +229,6 @@ class CartManager(BaseMongoModel):
             }
             cart['items'].append(new_item)
         
-        # Update cart
         self.collection.update_one(
             {"user_id": int(user_id)},
             {"$set": {"items": cart['items'], "updated_at": datetime.utcnow()}}
@@ -306,7 +289,6 @@ class OrderManager(BaseMongoModel):
         }
         return self.update_by_id(order_id, update_data)
 
-# Model instances
 categories = CategoryManager()
 products = ProductManager()
 reviews = ReviewManager()
