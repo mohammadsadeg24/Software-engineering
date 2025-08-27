@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
+from urllib.parse import urlparse
 from decouple import config
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -59,12 +61,26 @@ DATABASES = {
     }
 }
 
+# Load environment variables from .env file in the backend directory
+# load_dotenv(dotenv_path=BASE_DIR / '.env')
+
+# MONGODB_URI = config('MONGODB_URI', default='')
+
+# MONGODB_SETTINGS = {
+#     'host': MONGODB_URI,
+    
+# }
+
+MONGODB_URI = config('MONGODB_URI', default='')
+
+# If you need to extract the DB name for other purposes, you can do it like this:
+# Parse the URI and get the path, which is '/db_name'. Then strip the leading '/'
+parsed_uri = urlparse(MONGODB_URI)
+DB_NAME = parsed_uri.path[1:] # This gives 'my_production_db'
+
 MONGODB_SETTINGS = {
-    'host': config('MONGODB_HOST', default='localhost'),
-    'port': config('MONGODB_PORT', default=27017, cast=int),
-    'db_name': config('MONGODB_DB_NAME', default='honey_site'),
-    'username': config('MONGODB_USERNAME', default=''),
-    'password': config('MONGODB_PASSWORD', default=''),
+    'host': MONGODB_URI, # The connector will use this directly
+    'db': 'honey',       # Optional: Pass the name separately if your connector needs it
 }
 
 # CORS settings for frontend connection
