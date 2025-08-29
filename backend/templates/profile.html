@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{% comment %} <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -203,4 +203,68 @@
         // The password hash should NEVER be displayed, so we use a placeholder.
     </script>
 </body>
-</html>
+</html> {% endcomment %}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}User Profile - Pure Honey Shop{% endblock %}
+
+{% block content %}
+    <div class="container profile-container">
+        <div class="profile-header">
+            <i class="fas fa-user-circle profile-icon"></i>
+            <h2>User Profile</h2>
+            <p class="text-muted">Manage your account information here.</p>
+        </div>
+
+        <div class="profile-info">
+            {% if user.is_authenticated %}
+                <div class="row">
+                    <div class="col-12">
+                        <strong>ID:</strong> <span id="profile-id">{{ user.id }}</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <strong>Username:</strong> <span id="profile-username">{{ user.username }}</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <strong>Email:</strong> <span id="profile-email">{{ user.email }}</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <strong>First Name:</strong> <span id="profile-first-name">{{ user.first_name }}</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <strong>Last Name:</strong> <span id="profile-last-name">{{ user.last_name }}</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <strong>Phone Number:</strong> <span id="profile-phone">{{ user.profile.phone_number|default:"Not set" }}</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <strong>Password:</strong> <span id="profile-password">***********</span>
+                    </div>
+                </div>
+            {% else %}
+                <p class="text-center">Please <a href="{% url 'login' %}">log in</a> to view your profile.</p>
+            {% endif %}
+        </div>
+
+        {% if user.is_authenticated %}
+            <div class="text-center mt-4">
+                <a href="{% url 'edit_profile' %}" class="btn edit-btn">
+                    <i class="fas fa-edit"></i> Edit Profile
+                </a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

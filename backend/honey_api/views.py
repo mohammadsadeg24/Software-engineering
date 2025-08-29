@@ -7,11 +7,10 @@ from core.models import User, Address
 import json
 from datetime import datetime
 from django.shortcuts import render, redirect
-
 from honey_api.serializer import mongo_serializer
 from mongodb_connector import mongodb
-
-
+from django.shortcuts import render, redirect
+from django.contrib import messages
 from honey_api.utils import get_object_id, generate_unique_slug
 
 @require_http_methods(["GET"])
@@ -79,6 +78,58 @@ def category_detail(request, slug):
     except Exception as e:
         message = {'detail': str(e)}
         return render(request, '404.html', message, status=404)
+@login_required
+def profile_view(request):
+    try:
+        # Assuming User model has profile data; adjust if using MongoDB
+        user_data = {
+            'user': request.user,
+        }
+        return render(request, 'profile.html', user_data)
+    except Exception as e:
+        messages.error(request, str(e))
+        return render(request, '404.html', {'detail': str(e)}, status=404)
+
+@require_http_methods(["POST"])
+def contact_view(request):
+    try:
+        # Handle contact form submission
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        message = request.POST.get('message')
+        # Save to MongoDB or send email (implement as needed)
+        mongodb.database['contacts'].insert_one({
+            'name': name,
+            'email': email,
+            'phone': phone,
+            'message': message,
+            'date': datetime.now()
+        })
+        messages.success(request, "Message sent successfully!")
+        return redirect('home')
+    except Exception as e:
+        messages.error(request, str(e))
+        return render(request, '404.html', {'detail': str(e)}, status=500)
+
+@login_required
+def edit_profile_view(request):
+    if request.method == "POST":
+        # Handle form submission to update user data
+        try:
+            user = request.user
+            user.first_name = request.POST.get('first_name')
+            user.last_name = request.POST.get('last_name')
+            user.email = request.POST.get('email')
+            # Update phone_number in profile or MongoDB
+            # Example: user.profile.phone_number = request.POST.get('phone_number')
+            user.save()
+            messages.success(request, "Profile updated successfully!")
+            return redirect('profile')
+        except Exception as e:
+            messages.error(request, str(e))
+            return render(request, 'profile.html', {'error': str(e)})
+    return render(request, 'edit_profile.html', {'user': request.user})
 
 # @csrf_exempt
 # @require_http_methods(["POST"])

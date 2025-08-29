@@ -9,7 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # path('admin/', mongo_admin.urls),
     path('user/', include('core.urls')),
-    path('', include('honey_api.urls')),
+    path('/', include('honey_api.urls')),
 ]
 
 if settings.DEBUG:

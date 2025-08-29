@@ -1,5 +1,7 @@
+from django.conf import settings
 from django.urls import path
 from . import views
+from django.conf.urls.static import static
 
 urlpatterns = [
 
@@ -10,7 +12,14 @@ urlpatterns = [
     path('categories/', views.category_list, name='category_list'),
     path('categories/create/', views.create_category, name='create_category'),
     path('categories/<str:slug>/', views.category_detail, name='category_detail'),
-    
+    # Existing URLs
+    path('', views.home, name='home'),
+    path('categories/', views.category_list, name='category_list'),
+    path('categories/create/', views.create_category, name='create_category'),
+    path('categories/<str:slug>/', views.category_detail, name='category_detail'),
+    path('profile/', views.profile_view, name='profile'),
+    path('contact/', views.contact_view, name='contact'),
+    path('edit-profile/', views.edit_profile_view, name='edit_profile'),
     # # Products
     # path('products/', views.product_list, name='product_list'),
     # path('products/create/', views.create_product, name='create_product'),
@@ -30,4 +39,4 @@ urlpatterns = [
     # path('orders/', views.get_orders, name='get_orders'),
     # path('orders/create/', views.create_order, name='create_order'),
     # path('orders/<str:order_id>/', views.get_order_detail, name='get_order_detail')
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

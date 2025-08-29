@@ -7,3 +7,97 @@ uml domain class diagrm
 
 
 mongosh - 
+
+
+========================================
+SQLite (Relational - for Auth & Admin)
+========================================
+
+User
+- id (PK)
+- username
+- email
+- first_name
+- last_name
+- phone_number
+- role (Admin | Member)
+- password
+- created_at
+- updated_at
+
+Address
+- id (PK)
+- user_id (FK → User.id)
+- name
+- address
+- city
+- state
+- country
+- postal_code
+- is_default
+- created_at
+- updated_at
+
+Payment
+- id (PK)
+- order_id (FK → Order._id in Mongo)
+- amount
+- date_paid
+- provider
+- transaction_ref
+- status
+
+========================================
+MongoDB (Document - for Catalog & Orders)
+========================================
+
+Category (collection: categories)
+- _id
+- name
+- slug
+- description
+- parent_id (nullable, FK to Category._id)
+
+Product (collection: products)
+- _id
+- category_id (FK → Category._id)
+- title
+- slug
+- price
+- description
+- variants [ { size, type, stock } ]
+- images []
+- status (active | inactive)
+- created_at
+- modified_at
+
+Review (collection: reviews)
+- _id
+- user_id (copy of User.id from SQL)
+- product_id (FK → Product._id)
+- rating
+- comment
+- date
+
+Cart (collection: carts)
+- _id
+- user_id (copy of User.id from SQL)
+- items [
+    { product_id, variant_id, quantity, added_at }
+  ]
+- total_amount
+- created_at
+- updated_at
+
+Order (collection: orders)
+- _id
+- user_id (copy of User.id from SQL)
+- items [ snapshot of products & prices ]
+- total_amount
+- payment_status
+- order_status
+- description
+- address { embedded snapshot from SQL Address }
+- order_number
+- created_at
+- updated_at
