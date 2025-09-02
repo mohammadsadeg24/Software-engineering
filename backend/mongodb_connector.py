@@ -34,30 +34,29 @@ class MongoDBConnection:
     #         logger.info("MongoDB connection established successfully")
     def connect(self):
         try:
+            # Get MongoDB settings
             mongo_settings = settings.MONGODB_SETTINGS
             
-            # Use the complete connection string from the host key
-            connection_string = mongo_settings['host']
+            # Connect to MongoDB
+            self._client = MongoClient(
+                mongo_settings['host'],
+                serverSelectionTimeoutMS=5000
+            )
             
-            # Connect using the full string
-            self._client = MongoClient(connection_string)
+            # Get the database
+            db_name = mongo_settings['db']
+            self._database = self._client[db_name]
             
-            # Get the database. Use the explicitly set name from settings if available,
-            # otherwise it will use the one from the connection string.
-            db_name = mongo_settings.get('db', None)
-            self._database = self._client[db_name] if db_name else self._client.get_database()
-            
-            # Verify connection
-            self._client.admin.command('ismaster')
-            logger.info("MongoDB connection established successfully")
-            
+            # Test the connection
+            self._client.server_info()
+            logger.info(f"MongoDB connection established successfully to {mongo_settings['host']}")
         except Exception as e:
-            logger.error(f"Failed to connect to MongoDB: {e}")
+            logger.error(f"Failed to connect to MongoDB: {str(e)}")
             raise
     
     @property
     def database(self):
-        if self._database is not None:
+        if self._database is None:
             self.connect()
         return self._database
 
