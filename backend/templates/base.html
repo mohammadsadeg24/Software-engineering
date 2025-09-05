@@ -10,63 +10,101 @@
     <meta name="description" content="Premium quality pure honey shop with various honey types and sizes">
     <meta name="author" content="Honey Shop">
 
-    <!-- Load static CSS files -->
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/fontawesome.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     
-    <!-- Load static JS files -->
-    <script src="{% static 'js/scripts.js' %}"></script>
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
     <!-- Header -->
-    <header class="header">
+    <header class="header sticky-top">
         <nav class="navbar navbar-expand-lg">
             <div class="container">
                 <a class="navbar-brand" href="{% url 'home' %}">
                     <i class="fas fa-honeycomb"></i> Pure Honey
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon text-white">☰</span>
+                    <span class="navbar-toggler-icon">
+                        <i class="fas fa-bars text-white"></i>
+                    </span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'home' %}">Home</a>
+                            <a class="nav-link" href="{% url 'home' %}">
+                                <i class="fas fa-home"></i> Home
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'category_list' %}">Categories</a>
+                            <a class="nav-link" href="{% url 'shop' %}">
+                                <i class="fas fa-store"></i> Shop
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#about">About</a>
+                            <a class="nav-link" href="#about">
+                                <i class="fas fa-info-circle"></i> About
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#contact">Contact</a>
+                            <a class="nav-link" href="#contact">
+                                <i class="fas fa-envelope"></i> Contact
+                            </a>
                         </li>
                     </ul>
+                    
+                    <!-- Cart -->
+                    <div class="navbar-nav me-3">
+                        <a class="nav-link position-relative" href="{% url 'cart' %}">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark" id="cart-count">
+                                0
+                            </span>
+                        </a>
+                    </div>
+
                     <!-- User Profile Dropdown -->
                     {% if user.is_authenticated %}
-                    <div class="dropdown user-profile me-3">
-                        <button class="btn dropdown-toggle text-white" type="button" data-bs-toggle="dropdown"
-                            aria-expanded="false" id="profileDropdown">
-                            <i class="fas fa-user-circle"></i> {{ user.username }}
+                    <div class="dropdown user-profile">
+                        <button class="btn dropdown-toggle text-white" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle"></i> {{ user.first_name|default:user.username }}
                         </button>
-                        <ul class="dropdown-menu" aria-labelledby="profileDropdown">
-                            <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user"></i> My Account</a></li>
-                            <li><a class="dropdown-item" href="{% url 'get_orders' %}"><i class="fas fa-shopping-bag"></i> My Orders</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-heart"></i> Wishlist</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user"></i> My Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'orders' %}"><i class="fas fa-shopping-bag"></i> My Orders</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog"></i> Settings</a></li>
                             <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                         </ul>
                     </div>
                     {% else %}
-                    <a class="btn text-white" href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Login</a>
+                    <div class="auth-buttons">
+                        <a class="btn btn-outline-light me-2" href="{% url 'login' %}">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                        <a class="btn btn-warning" href="{% url 'register' %}">
+                            <i class="fas fa-user-plus"></i> Register
+                        </a>
+                    </div>
                     {% endif %}
                 </div>
             </div>
         </nav>
     </header>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
     <!-- Main Content -->
     <main>
@@ -75,38 +113,41 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer">
+    <footer class="footer mt-5">
         <div class="container">
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-4 mb-4">
                     <h5><i class="fas fa-honeycomb"></i> Pure Honey Shop</h5>
-                    <p>Your trusted source for premium quality pure honey.</p>
+                    <p>Your trusted source for premium quality pure honey. We bring you the finest selection of natural, unprocessed honey from local beekeepers.</p>
                     <div class="social-icons">
                         <a href="#"><i class="fab fa-facebook"></i></a>
                         <a href="#"><i class="fab fa-instagram"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 mb-4">
                     <h5>Quick Links</h5>
                     <ul class="list-unstyled">
                         <li><a href="{% url 'home' %}">Home</a></li>
-                        <li><a href="{% url 'category_list' %}">Categories</a></li>
+                        <li><a href="{% url 'shop' %}">Shop</a></li>
                         <li><a href="#about">About Us</a></li>
                         <li><a href="#contact">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
                     </ul>
                 </div>
-                <div class="col-md-4">
-                    <h5>Customer Service</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#">Shipping Info</a></li>
-                        <li><a href="#">Returns</a></li>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Support</a></li>
+                <div class="col-md-4 mb-4">
+                    <h5>Contact Info</h5>
+                    <ul class="list-unstyled contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Honey Lane, Sweet Valley, HV 12345</li>
+                        <li><i class="fas fa-phone"></i> +1 (555) 123-HONEY</li>
+                        <li><i class="fas fa-envelope"></i> info@purehoneyshop.com</li>
+                        <li><i class="fas fa-clock"></i> Mon-Fri: 9AM-6PM</li>
                     </ul>
                 </div>
             </div>
-            <hr style="border-color: var(--honey-gold);">
+            <hr>
             <div class="text-center">
                 <p>&copy; 2025 Pure Honey Shop. All rights reserved.</p>
             </div>
@@ -114,6 +155,10 @@
     </footer>
 
     <!-- Bootstrap JS -->
-    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{% static 'js/scripts.js' %}"></script>
+    
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -3,6 +3,8 @@ from django.urls import path
 from . import views
 from django.conf.urls.static import static
 urlpatterns = [
+    path('', views.index, name='index'),
+    path('shop/', views.honey_shop_view, name='shop'),
     # -------------------------
     # Home / Categories
     # -------------------------
@@ -10,7 +12,7 @@ urlpatterns = [
     path('categories/', views.category_list, name='category_list'),
     path('category/create/', views.create_category, name='create_category'),
     path('category/<slug:slug>/', views.category_detail, name='category_detail'),
-
+    path('debug/categories/', views.debug_categories, name='debug_categories'),
     # -------------------------
     # Profile / User
     # -------------------------
@@ -32,11 +34,13 @@ urlpatterns = [
     # -------------------------
     path('products/', views.product_list, name='product_list'),
     path('product/<str:product_id>/reviews/', views.product_reviews, name='product_reviews'),
+    path('product/<str:product_id>/', views.product_detail, name='product_detail'),
 
     # -------------------------
     # Cart
     # -------------------------
-    path('cart/', views.get_cart, name='get_cart'),
+    path('cart/', views.cart_view, name='cart'),
+    path('api/cart/', views.get_cart, name='get_cart'),
     path('cart/add/', views.add_to_cart, name='add_to_cart'),
     path('cart/remove/<str:product_id>/', views.remove_from_cart, name='remove_from_cart'),
 

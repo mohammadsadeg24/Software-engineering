@@ -13,8 +13,8 @@ class BaseMongoModel:
     
     def create(self, data):
         """Create a new document"""
-        data['created_at'] = datetime.utcnow()
-        data['updated_at'] = datetime.utcnow()
+        data['created_at'] = datetime.now()
+        data['updated_at'] = datetime.now()
         result = self.collection.insert_one(data)
         return str(result.inserted_id)
     
@@ -37,7 +37,7 @@ class BaseMongoModel:
     
     def update_by_id(self, doc_id, update_data):
         """Update document by ID"""
-        update_data['updated_at'] = datetime.utcnow()
+        update_data['updated_at'] = datetime.now()
         result = self.collection.update_one(
             {"_id": get_object_id(doc_id)},
             {"$set": update_data}
@@ -67,6 +67,13 @@ class CategoryManager(BaseMongoModel):
         return mongo_serializer(
             self.collection.find_one({"slug": slug})
         )
+    def find_all(self):
+        try:
+            # Return all categories, sorted by name
+            return self.collection.find({}).sort('name', 1)
+        except Exception as e:
+            print("Error fetching categories:", str(e))
+            return []        
     
 class ProductManager(BaseMongoModel):
     def __init__(self):
@@ -83,7 +90,7 @@ class ProductManager(BaseMongoModel):
             'variants': variants or [],
             'images': [],
             'status': 'active',
-            'modified_at': datetime.utcnow()
+            'modified_at': datetime.now()
         }
         return self.create(data)
     
@@ -145,7 +152,7 @@ class ReviewManager(BaseMongoModel):
             'product_id': get_object_id(product_id),
             'rating': int(rating),
             'comment': comment,
-            'date': datetime.utcnow()
+            'date': datetime.now()
         }
         return self.create(data)
     
@@ -225,13 +232,13 @@ class CartManager(BaseMongoModel):
                 'product_id': product_id,
                 'variant_id': variant_id,
                 'quantity': quantity,
-                'added_at': datetime.utcnow().isoformat()
+                'added_at': datetime.now().isoformat()
             }
             cart['items'].append(new_item)
         
         self.collection.update_one(
             {"user_id": int(user_id)},
-            {"$set": {"items": cart['items'], "updated_at": datetime.utcnow()}}
+            {"$set": {"items": cart['items'], "updated_at": datetime.now()}}
         )
         
         return self.get_or_create_cart(user_id)
@@ -247,7 +254,7 @@ class CartManager(BaseMongoModel):
         """Clear user's cart"""
         return self.collection.update_one(
             {"user_id": int(user_id)},
-            {"$set": {"items": [], "updated_at": datetime.utcnow()}}
+            {"$set": {"items": [], "updated_at": datetime.now()}}
         ).modified_count > 0
 
 class OrderManager(BaseMongoModel):
@@ -270,8 +277,8 @@ class OrderManager(BaseMongoModel):
     
     def _generate_order_number(self):
         """Generate unique order number"""
-        return f"ORD-{datetime.utcnow().strftime('%Y%m%d')}-{str(uuid.uuid4())[:8].upper()}"
-    
+        return f"ORD-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:8].upper()}"
+
     def get_user_orders(self, user_id, limit=20, skip=0):
         """Get orders for a user"""
         return self.find_all(

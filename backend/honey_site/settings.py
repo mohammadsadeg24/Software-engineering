@@ -65,16 +65,8 @@ DATABASES = {
 # MongoDB Settings - Local Development
 MONGODB_SETTINGS = {
     'host': 'mongodb://localhost:27017',
-    'db': 'honey'
+    'db': 'honey_site'
 }
-
-# CORS settings for frontend connection
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # React default
-    "http://127.0.0.1:3000",
-    "http://localhost:8080",  # Vue default
-    "http://127.0.0.1:8080",
-]
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -105,7 +97,3 @@ REST_FRAMEWORK = {
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'core.User'
-
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]
-STATIC_ROOT = BASE_DIR / "staticfiles"
