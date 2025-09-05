@@ -41,8 +41,8 @@
                     <div class="sort-controls">
                         <select class="form-select" id="sortSelect" onchange="applySorting()">
                             <option value="">Sort By</option>
-                            <option value="name" {% if request.GET.sort == 'name' %}selected{% endif %}>Name A-Z</option>
-                            <option value="-name" {% if request.GET.sort == '-name' %}selected{% endif %}>Name Z-A</option>
+                            <option value="title" {% if request.GET.sort == 'title' %}selected{% endif %}>Name A-Z</option>
+                            <option value="-title" {% if request.GET.sort == '-title' %}selected{% endif %}>Name Z-A</option>
                             <option value="price" {% if request.GET.sort == 'price' %}selected{% endif %}>Price Low to High</option>
                             <option value="-price" {% if request.GET.sort == '-price' %}selected{% endif %}>Price High to Low</option>
                         </select>
@@ -60,8 +60,8 @@
                     All Products
                 </a>
                 {% for category in categories %}
-                    <a href="{% url 'shop' %}?category={{ category.slug|default:category.name|slugify }}" 
-                       class="filter-btn {% if request.GET.category == category.slug or request.GET.category == category.name|slugify %}active{% endif %}">
+                    <a href="{% url 'shop' %}?category={{ category.slug }}" 
+                       class="filter-btn {% if request.GET.category == category.slug %}active{% endif %}">
                         {{ category.name }}
                     </a>
                 {% endfor %}
@@ -79,16 +79,6 @@
             </div>
             {% endif %}
 
-            <!-- Debug information -->
-            {% if debug %}
-            <div class="alert alert-info">
-                <h4>Debug Info:</h4>
-                <p>Number of products: {{ products|length }}</p>
-                <p>Categories: {{ categories|length }}</p>
-                <pre>{{ products_debug|pprint }}</pre>
-            </div>
-            {% endif %}
-
             <div class="row" id="productsContainer">
                 {% for product in products %}
                 <div class="col-xl-3 col-lg-4 col-md-6 mb-4 product-item">
@@ -102,13 +92,9 @@
                                 <img src="{% static 'images/honey-jar-placeholder.jpg' %}" alt="{{ product.title }}" loading="lazy">
                             {% endif %}
                             <div class="product-overlay">
-                                <a href="{% url 'product_detail' product.id %}" class="btn btn-honey btn-sm me-2">
+                                <a href="{% url 'product_detail' product.slug %}" class="btn btn-honey btn-sm me-2">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <button class="btn btn-outline-light btn-sm add-to-cart-quick" 
-                                        data-product-id="{{ product.id }}">
-                                    <i class="fas fa-cart-plus"></i>
-                                </button>
                             </div>
                             {% if product.is_featured %}
                             <span class="product-badge featured">Featured</span>

@@ -7,90 +7,96 @@ from django.core.paginator import Paginator
 from core.models import User, Address
 import json
 from datetime import datetime
-from .mongo_models import CartManager, ProductManager, ReviewManager, OrderManager, CategoryManager
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from honey_api.serializer import mongo_serializer
 from mongodb_connector import mongodb
 from honey_api.utils import get_object_id, generate_unique_slug
 from django.shortcuts import render
-from .mongo_models import ProductManager
 
-# -------------------------
-# Index View (for enhanced template)
-# -------------------------
+from .mongo_models import CartManager, ProductManager, ReviewManager, OrderManager, CategoryManager
+
 @require_http_methods(["GET"])
 def index(request):
     try:
-        pm = ProductManager()
-        # Get featured products (limit to 3)
-        # featured_products = pm.get_featured_products()[:3]
-        featured_products = pm.find_all()[:3]
-        context = {
-            'featured_products': featured_products,
-        }
-        return render(request, 'index.html', context)
-    except Exception as e:
-        print("Error in index view:", str(e))
-        context = {
-            'featured_products': [],
-        }
-        return render(request, 'index.html', context)
+        products = mongodb.database['products'].find().limit(4)
+        categories = mongodb.database['categories'].find()
 
-@require_http_methods(["GET"])
-def debug_categories(request):
-    try:
-        cm = CategoryManager()
-        categories = list(cm.find_all())
-        return JsonResponse({
-            'count': len(categories),
+        context = {
+            'featured_products': mongo_serializer(products),
             'categories': mongo_serializer(categories)
-        })
-    except Exception as e:
-        return JsonResponse({
-            'error': str(e)
-        }, status=500)
-# -------------------------
-# Product Views
-# -------------------------
-# Renamed and updated the function to implement search, category filtering, and sorting
-@require_http_methods(["GET"])
-def honey_shop_view(request):
-    
-    try:
-        print("Starting honey_shop_view...")
+        }
 
-        # Get query parameters
-        search_query = request.GET.get('q', '').strip()
-        category_slug = request.GET.get('category', '').strip()
-        sort_by = request.GET.get('sort', 'title').strip()  # Changed default sort to 'title'
+        return render(request, 'index.html', context)
+
+    except Exception as e:
+        return render(request, '404.html', {'detail': str(e)}, status=404)
+
+
+@require_http_methods(["GET"])
+def category_list(request):
+    try:
+        categories = mongodb.database['categories'].find()
+
+        context = {
+            'categories': mongo_serializer(categories)
+        }
+
+        return render(request, 'index.html', context)
+    except Exception as e:
+        return render(request, '404.html', {'detail': str(e)}, status=404)
+
+
+@require_http_methods(["GET"])
+def product_list(request):
+    try:
+        products = mongodb.database['products'].find()
+
+        context = {
+            'products': mongo_serializer(products),
+        }
+
+        return render(request, 'products.html', context)
+
+    except Exception as e:
+        return render(request, '404.html', {'detail': str(e)}, status=404)
+
+
+@require_http_methods(["GET"])
+def product_detail(request, slug):
+    try:
+        product = mongodb.database['products'].find_one({"slug": slug})
+
+        
+        context = {
+            'product': product,
+        }
+
+        return render(request, 'product_detail.html', context)
+        
+    except Exception as e:
+        return render(request, '404.html', {'detail': str(e)}, status=404)
+
+
+@require_http_methods(["GET"])
+def shop(request):
+    try:
+        search_query = request.GET.get('q')
+        category_slug = request.GET.get('category')
+        sort_by = request.GET.get('sort', 'title')
         page_number = request.GET.get('page', 1)
         
-        print(f"Query parameters: search={search_query}, category={category_slug}, sort={sort_by}, page={page_number}")
+        filters = {}
         
-        
-        # Initialize managers
-        pm = ProductManager()
-        cm = CategoryManager()
-        
-        # Base query for active products (temporarily remove status filter for testing)
-        query = {}  # Removed status filter temporarily to see all products
-        
-        # Apply search filter
         if search_query:
-            query['title'] = {'$regex': search_query, '$options': 'i'}  # Changed 'name' to 'title'
+            filters['title'] = {'$regex': search_query, '$options': 'i'} 
         
-        print(f"Initial query: {query}")
-        
-        # Apply category filter
         if category_slug:
-            category_obj = cm.collection.find_one({'slug': category_slug})
-            print(f"Found category: {category_obj}")
+            category_obj = mongodb.database['categories'].find_one({'slug': category_slug})
             if category_obj:
-                query['category_id'] = category_obj['_id']
+                filters['category_id'] = category_obj['_id']
         
-        # Determine sorting order
-        sort_field = 'title'  # Changed default sort field to 'title'
+        sort_field = 'title' 
         sort_direction = 1
         if sort_by:
             if sort_by.startswith('-'):
@@ -98,91 +104,26 @@ def honey_shop_view(request):
                 sort_direction = -1
             else:
                 sort_field = sort_by
-        
-        # Get all products matching the criteria
-        all_products = pm.find_all(query, sort=[(sort_field, sort_direction)])
-        
-        # Convert MongoDB documents to make them template-friendly
-        processed_products = []
-        for product in all_products:
-            # Convert _id to id for template access
-            product['id'] = str(product.get('_id'))
-            if 'variants' in product and product['variants']:
-                for variant in product['variants']:
-                    if '_id' in variant:
-                        variant['id'] = str(variant['_id'])
-            processed_products.append(product)
-        
-        # Pagination
-        paginator = Paginator(processed_products, 12) # Show 12 products per page
+
+        products = mongodb.database['products'].find(filters, sort=[(sort_field, sort_direction)])
+        categories = mongodb.database['categories'].find()
+
+        paginator = Paginator(list(mongo_serializer(products)), 2)
         products_page = paginator.get_page(page_number)
         
-        # Fetch all categories for the filter links
-        all_categories_cursor = cm.find_all()
-        # print("Categories found:", list(all_categories))
-
-        # Convert products to list for debugging
-        products_list = list(products_page)
-        all_categories_list = list(all_categories_cursor)
-        print("Categories found:", all_categories_list)
-
         context = {
             'products': products_page,
-            'categories': all_categories_list,
+            'categories': mongo_serializer(categories),
             'search_query': search_query,
             'selected_category_slug': category_slug,
             'sort_by': sort_by,
-            'debug': True,  # Enable debug output
-            'products_debug': products_list[:2] if products_list else []  # Show first 2 products for debugging
         }
         
-        # Debug print
-        print(f"Number of products: {len(products_list)}")
-        if products_list:
-            print(f"Sample product: {products_list[0]}")
-            
         return render(request, 'shop.html', context)
         
     except Exception as e:
-        print("Error in honey_shop_view:", str(e))
-        messages.error(request, "An error occurred while loading the shop page.")
-        return render(request, 'shop.html', {'products': [], 'categories': []})
+        return render(request, '404.html', {'detail': str(e)}, status=404)
 
-
-
-@require_http_methods(["GET"])
-def product_detail(request, product_id):
-    try:
-        pm = ProductManager()
-        product = pm.find_by_id(product_id)
-        
-        if not product:
-            messages.error(request, "Product not found.")
-            return redirect('shop')
-            
-        # Convert MongoDB _id to string id for template
-        product['id'] = str(product.get('_id'))
-        if 'variants' in product and product['variants']:
-            for variant in product['variants']:
-                if '_id' in variant:
-                    variant['id'] = str(variant['_id'])
-                    
-        context = {
-            'product': product,
-        }
-        return render(request, 'product_detail.html', context)
-        
-    except Exception as e:
-        print("Error in product_detail:", str(e))
-        messages.error(request, "An error occurred while loading the product.")
-        return redirect('shop')
-
-def product_list(request):
-    pm = ProductManager()
-    print("DEBUG pm.collection:", type(pm.collection))  # should be Collection
-    products = pm.find_all()  # or find_all
-    print("DEBUG products:", type(products))            # should be list, not dict
-    return render(request, "products.html", {"products":      products})
 
 # -------------------------
 # Helpers
@@ -196,36 +137,6 @@ def error_response(message, status=400):
 # -------------------------
 # Home / Categories
 # -------------------------
-@require_http_methods(["GET"])
-def home(request):
-    try:
-        category = request.GET.get('category_id')
-        if category:
-            product_list = mongo_serializer(
-                mongodb.database['products'].find({"category_id": get_object_id(category)})
-            )
-        else:
-            product_list = mongo_serializer(mongodb.database['products'].find())
-        
-        # Add print statement for debugging
-        print("Products found:", product_list)
-        
-        context = {
-            'product_list': product_list,
-            'page_title': 'Home'
-        }
-        return render(request, 'home.html', context)
-    except Exception as e:
-        print("Error in home view:", str(e))  # Debug print
-        return render(request, '404.html', {'detail': str(e)}, status=404)
-
-@require_http_methods(["GET"])
-def category_list(request):
-    try:
-        category_list = mongo_serializer(mongodb.database['categories'].find())
-        return render(request, 'home.html', {'category_list': category_list})
-    except Exception as e:
-        return render(request, '404.html', {'detail': str(e)}, status=404)
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -243,15 +154,6 @@ def create_category(request):
     except Exception as e:
         return render(request, '404.html', {'detail': str(e)}, status=500)
 
-@require_http_methods(["GET"])
-def category_detail(request, slug):
-    try:
-        category = mongo_serializer(mongodb.database['categories'].find_one({'slug': slug}))
-        if not category:
-            raise ValueError(f"Category with slug '{slug}' not found.")
-        return render(request, 'home.html', {'category': category})
-    except Exception as e:
-        return render(request, '404.html', {'detail': str(e)}, status=404)
 
 # -------------------------
 # Profile
@@ -276,28 +178,6 @@ def edit_profile_view(request):
             return render(request, 'profile.html', {'error': str(e)})
     return render(request, 'edit_profile.html', {'user': request.user})
 
-# -------------------------
-# Test MongoDB Connection
-# -------------------------
-def test_mongodb(request):
-    try:
-        # Test the connection
-        result = mongodb.database.list_collection_names()
-        collections = list(result)
-        return JsonResponse({
-            'status': 'success',
-            'message': 'MongoDB connection successful',
-            'collections': collections
-        })
-    except Exception as e:
-        return JsonResponse({
-            'status': 'error',
-            'message': f'MongoDB connection failed: {str(e)}'
-        }, status=500)
-
-# -------------------------
-# Contact
-# -------------------------
 @require_http_methods(["POST"])
 def contact_view(request):
     try:
@@ -347,6 +227,7 @@ def cart_view(request):
         messages.error(request, str(e))
         return render(request, 'cart.html', {'cart': None})
 
+
 @require_http_methods(["GET"])
 @login_required
 def get_cart(request):
@@ -356,6 +237,7 @@ def get_cart(request):
         return json_response(user_cart)
     except Exception as e:
         return error_response(str(e), 500)
+
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -371,6 +253,7 @@ def add_to_cart(request):
         return json_response({"success": True, "cart": updated_cart})
     except Exception as e:
         return error_response(str(e), 500)
+
 
 @csrf_exempt
 @require_http_methods(["DELETE"])

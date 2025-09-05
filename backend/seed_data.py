@@ -7,6 +7,7 @@ from bson import ObjectId
 client = MongoClient('mongodb://localhost:27017/')
 db = client['honey_site']
 
+
 # Clear existing data to avoid duplicates
 db.categories.delete_many({})
 db.products.delete_many({})

@@ -12,6 +12,8 @@ urlpatterns = [
     # User Profile
     path('profile/', views.get_profile, name='get_profile'),
     path('profile/update/', views.update_profile, name='update_profile'),
+    # path('profile/', views.profile_view, name='profile'),
+    # path('profile/edit/', views.edit_profile_view, name='edit_profile'),
     
     # Addresses
     path('addresses/', views.get_addresses, name='get_addresses'),
