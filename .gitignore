@@ -1,4 +1,9 @@
 # Created by https://www.gitignore.io
+backend/.env
+backend/Pipfile
+backend/Pipfile.lock
+backend/test.py
+backend/test_mongodb.py
 
 ### OSX ###
 .DS_Store

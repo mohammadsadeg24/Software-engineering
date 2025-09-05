@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shop - Pure Honey Shop{% endblock %}
+
+
+{% block content %}
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h1><i class="fas fa-store"></i> Our Honey Collection</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+                            <li class="breadcrumb-item active">Shop</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search and Filters -->
+    <section class="shop-filters">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <form action="{% url 'shop' %}" method="GET" class="search-form">
+                        <div class="input-group">
+                            <input type="text" name="q" class="form-control" 
+                                   placeholder="Search products..." value="{{ request.GET.q }}">
+                            <button type="submit" class="btn btn-honey">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-4">
+                    <div class="sort-controls">
+                        <select class="form-select" id="sortSelect" onchange="applySorting()">
+                            <option value="">Sort By</option>
+                            <option value="name" {% if request.GET.sort == 'name' %}selected{% endif %}>Name A-Z</option>
+                            <option value="-name" {% if request.GET.sort == '-name' %}selected{% endif %}>Name Z-A</option>
+                            <option value="price" {% if request.GET.sort == 'price' %}selected{% endif %}>Price Low to High</option>
+                            <option value="-price" {% if request.GET.sort == '-price' %}selected{% endif %}>Price High to Low</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Category Filters -->
+    <section class="category-filters">
+        <div class="container">
+            <div class="filter-tabs">
+                <a href="{% url 'shop' %}" class="filter-btn {% if not request.GET.category %}active{% endif %}">
+                    All Products
+                </a>
+                {% for category in categories %}
+                    <a href="{% url 'shop' %}?category={{ category.slug|default:category.name|slugify }}" 
+                       class="filter-btn {% if request.GET.category == category.slug or request.GET.category == category.name|slugify %}active{% endif %}">
+                        {{ category.name }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Grid -->
+    <section class="products-section">
+        <div class="container">
+            {% if request.GET.q %}
+            <div class="search-results-info mb-4">
+                <p>Showing results for "<strong>{{ request.GET.q }}</strong>" 
+                   {% if products.count %}({{ products.count }} product{{ products.count|pluralize }} found){% endif %}</p>
+            </div>
+            {% endif %}
+
+            <!-- Debug information -->
+            {% if debug %}
+            <div class="alert alert-info">
+                <h4>Debug Info:</h4>
+                <p>Number of products: {{ products|length }}</p>
+                <p>Categories: {{ categories|length }}</p>
+                <pre>{{ products_debug|pprint }}</pre>
+            </div>
+            {% endif %}
+
+            <div class="row" id="productsContainer">
+                {% for product in products %}
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-4 product-item">
+                    <div class="product-card h-100">
+                        <div class="product-image">
+                            {% if product.image_url %}
+                                <img src="{{ product.image_url }}" alt="{{ product.title }}" loading="lazy">
+                            {% elif product.image %}
+                                <img src="{{ product.image }}" alt="{{ product.title }}" loading="lazy">
+                            {% else %}
+                                <img src="{% static 'images/honey-jar-placeholder.jpg' %}" alt="{{ product.title }}" loading="lazy">
+                            {% endif %}
+                            <div class="product-overlay">
+                                <a href="{% url 'product_detail' product.id %}" class="btn btn-honey btn-sm me-2">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <button class="btn btn-outline-light btn-sm add-to-cart-quick" 
+                                        data-product-id="{{ product.id }}">
+                                    <i class="fas fa-cart-plus"></i>
+                                </button>
+                            </div>
+                            {% if product.is_featured %}
+                            <span class="product-badge featured">Featured</span>
+                            {% endif %}
+                            {% if product.is_new %}
+                            <span class="product-badge new">New</span>
+                            {% endif %}
+                            {% if product.sale_price and product.sale_price < product.price %}
+                            <span class="product-badge sale">Sale</span>
+                            {% endif %}
+                        </div>
+                        <div class="product-info">
+                            <div class="product-category">
+                                {% if product.category.name %}
+                                    {{ product.category.name }}
+                                {% elif product.category %}
+                                    {{ product.category }}
+                                {% else %}
+                                    Honey
+                                {% endif %}
+                            </div>
+                            <h5 class="product-title">
+                                <a href="{% url 'product_detail' product.id %}">{{ product.title }}</a>
+                            </h5>
+                            <p class="product-description">{{ product.description|default:""|truncatewords:12 }}</p>
+                            
+                            <!-- Size/Variant Options -->
+                            {%  if product.variants %}
+                            <div class="size-options mb-3">
+                                <small class="text-muted">Available sizes:</small>
+                                <div class="size-buttons">
+                                    {% for variant in product.variants %}
+                                        <button class="size-btn {% if forloop.first %}active{% endif %}" 
+                                                data-price="{{ variant.price }}" 
+                                                data-variant-id="{{ variant.id }}"
+                                                onclick="selectVariant(this, '{{ variant.size }}', {{ variant.price }})">
+                                            {{ variant.size }}
+                                        </button>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            <div class="product-price mb-3">
+                                {% if product.sale_price and product.sale_price < product.price %}
+                                    <span class="price sale-price">${{ product.sale_price|floatformat:2 }}</span>
+                                    <span class="original-price">${{ product.price|floatformat:2 }}</span>
+                                {% elif product.variants and product.variants|length > 0 %}
+                                    <span class="price variant-price">${{ product.variants.0.price|floatformat:2 }}</span>
+                                    {% if product.variants|length > 1 %}
+                                        <small class="text-muted">- ${{ product.variants|floatformat:2 }}</small>
+                                        {% comment %} <small class="text-muted">Last price: ${{ product.variants|last.price|floatformat:2 }}</small> {% endcomment %}
+                                    {% endif %}
+                                {% else %}
+                                    <span class="price">${{ product.price|floatformat:2 }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <form class="add-to-cart-form" method="POST" action="{% url 'add_to_cart' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                                {% if product.variants and product.variants|length > 0 %}
+                                    <input type="hidden" name="variant_id" class="variant-id" value="{{ product.variants.0.id|default:0 }}">
+                                {% endif %}
+                                
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="quantity-controls">
+                                        <button type="button" class="qty-btn" onclick="decreaseQuantity(this)">-</button>
+                                        <input type="number" name="quantity" value="1" min="1" max="{{ product.stock|default:999 }}" class="qty-input">
+                                        <button type="button" class="qty-btn" onclick="increaseQuantity(this)">+</button>
+                                    </div>
+                                    <button type="submit" class="btn btn-honey btn-sm flex-grow-1" 
+                                            {% if product.stock == 0 %}disabled{% endif %}>
+                                        <i class="fas fa-cart-plus"></i> 
+                                        {% if product.stock == 0 %}Out of Stock{% else %}Add to Cart{% endif %}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="no-products text-center py-5">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h4>No Products Found</h4>
+                        {% if request.GET.q %}
+                            <p>Sorry, we couldn't find any products matching "{{ request.GET.q }}".</p>
+                            <a href="{% url 'shop' %}" class="btn btn-honey">View All Products</a>
+                        {% elif request.GET.category %}
+                            <p>No products found in this category.</p>
+                            <a href="{% url 'shop' %}" class="btn btn-honey">View All Products</a>
+                        {% else %}
+                            <p>There are no products available at the moment.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if products.has_other_pages %}
+            <nav aria-label="Products pagination" class="mt-5">
+                <ul class="pagination justify-content-center">
+                    {% if products.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.sort %}sort={{ request.GET.sort }}&{% endif %}page={{ products.previous_page_number }}">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in products.paginator.page_range %}
+                        {% if products.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.sort %}sort={{ request.GET.sort }}&{% endif %}page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if products.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.sort %}sort={{ request.GET.sort }}&{% endif %}page={{ products.next_page_number }}">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}  
+
+{% block extra_js %}
+<script>
+    function applySorting() {
+        const sortValue = document.getElementById('sortSelect').value;
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        if (sortValue) {
+            urlParams.set('sort', sortValue);
+        } else {
+            urlParams.delete('sort');
+        }
+        
+        window.location.search = urlParams.toString();
+    }
+    
+    function selectVariant(button, size, price) {
+        // Remove active class from other buttons
+        button.parentNode.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('active'));
+        // Add active class to clicked button
+        button.classList.add('active');
+        
+        // Update price display
+        const priceElement = button.closest('.product-card').querySelector('.variant-price');
+        if (priceElement) {
+            priceElement.textContent = '$' + parseFloat(price).toFixed(2);
+        }
+        
+        // Update hidden variant_id field
+        const variantIdField = button.closest('.product-card').querySelector('.variant-id');
+        if (variantIdField) {
+            variantIdField.value = button.dataset.variantId;
+        }
+    }
+    
+    function increaseQuantity(button) {
+        const input = button.previousElementSibling;
+        const max = parseInt(input.getAttribute('max')) || 999;
+        if (parseInt(input.value) < max) {
+            input.value = parseInt(input.value) + 1;
+        }
+    }
+    
+    function decreaseQuantity(button) {
+        const input = button.nextElementSibling;
+        if (parseInt(input.value) > 1) {
+            input.value = parseInt(input.value) - 1;
+        }
+    }
+
+    // Add loading state for add to cart
+    document.querySelectorAll('.add-to-cart-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const button = this.querySelector('button[type="submit"]');
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+            button.disabled = true;
+        });
+    });
+
+</script>
+{% endblock %}

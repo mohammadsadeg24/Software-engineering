@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - Pure Honey Shop{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center min-vh-75">
+                <div class="col-lg-6">
+                    <div class="hero-content">
+                        <h1 class="hero-title">Premium Pure Honey</h1>
+                        <p class="hero-subtitle">Discover our collection of pure, natural honey from the finest apiaries around the world</p>
+                        <div class="hero-buttons">
+                            <a href="{% url 'shop' %}" class="btn btn-honey btn-lg me-3">
+                                <i class="fas fa-shopping-cart"></i> Shop Now
+                            </a>
+                            <a href="#about" class="btn btn-outline-honey btn-lg">
+                                <i class="fas fa-info-circle"></i> Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="hero-image">
+                        <img src="{% static 'images/hero-honey.jpg' %}" alt="Premium Honey" class="img-fluid rounded-3 shadow-lg">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Section -->
+    <section class="search-section">
+        <div class="container">
+            <div class="search-container">
+                <form action="{% url 'shop' %}" method="GET">
+                    <div class="input-group">
+                        <input type="text" name="q" class="form-control search-input" 
+                               placeholder="Search for honey products..." value="{{ request.GET.q }}">
+                        <button type="submit" class="btn btn-honey">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="featured-products">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2>Featured Products</h2>
+                <p class="text-muted">Our most popular honey varieties</p>
+            </div>
+            <div class="row">
+                {% for product in featured_products %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="product-card">
+                        <div class="product-image">
+                            {% if product.image_url %}
+                                <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy">
+                            {% elif product.image %}
+                                <img src="{{ product.image }}" alt="{{ product.name }}" loading="lazy">
+                            {% else %}
+                                <img src="{% static 'images/honey-jar-placeholder.jpg' %}" alt="{{ product.name }}" loading="lazy">
+                            {% endif %}
+                            <div class="product-overlay">
+                                <a href="{% url 'product_detail' product.id %}" class="btn btn-honey btn-sm">
+                                    <i class="fas fa-eye"></i> View Details
+                                </a>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h5 class="product-title">{{ product.name }}</h5>
+                            <p class="product-description">{{ product.description|truncatewords:15 }}</p>
+                            <div class="product-price">
+                                {% if product.variants and product.variants|length > 0 %}
+                                    <span class="price">${{ product.variants.0.price|floatformat:2 }}</span>
+                                    {% if product.variants|length > 1 %}
+                                        <small class="text-muted">- ${{ product.variants|last|default:product.variants.0 }}{% if product.variants|last != product.variants.0 %}.price|floatformat:2{% endif %}</small>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="price">${{ product.price|floatformat:2 }}</span>
+                                {% endif %}
+                                {% if product.sale_price and product.sale_price < product.price %}
+                                    <span class="original-price">${{ product.price|floatformat:2 }}</span>
+                                    <span class="sale-badge">Sale</span>
+                                {% endif %}
+                            </div>
+                            <div class="product-meta">
+                                {% if product.category %}
+                                    <small class="text-muted">
+                                        <i class="fas fa-tag"></i> {{ product.category }}
+                                    </small>
+                                {% endif %}
+                                {% if product.rating %}
+                                    <div class="product-rating">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= product.rating %}
+                                                <i class="fas fa-star text-warning"></i>
+                                            {% else %}
+                                                <i class="far fa-star text-muted"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <small class="text-muted">({{ product.rating }})</small>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <button class="btn btn-honey btn-sm add-to-cart" 
+                                    data-product-id="{{ product.id }}" 
+                                    data-price="{% if product.sale_price and product.sale_price < product.price %}{{ product.sale_price }}{% else %}{{ product.price }}{% endif %}"
+                                    data-name="{{ product.name }}"
+                                    {% if not product.in_stock %}disabled{% endif %}>
+                                <i class="fas fa-cart-plus"></i> 
+                                {% if product.in_stock %}Add to Cart{% else %}Out of Stock{% endif %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center">
+                    <div class="empty-state">
+                        <i class="fas fa-jar fa-3x text-muted mb-3"></i>
+                        <h5>No Featured Products</h5>
+                        <p class="text-muted">No featured products are available at the moment. Please check back later!</p>
+                        <a href="{% url 'shop' %}" class="btn btn-outline-honey">
+                            <i class="fas fa-store"></i> Browse All Products
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% if featured_products %}
+            <div class="text-center mt-4">
+                <a href="{% url 'shop' %}" class="btn btn-outline-honey">
+                    <i class="fas fa-store"></i> View All Products
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="categories-section">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2>Shop by Category</h2>
+                <p class="text-muted">Explore our honey varieties</p>
+            </div>
+            <div class="row">
+                {% for category in categories %}
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="category-card">
+                        <div class="category-icon">
+                            {% if category.icon %}
+                                <i class="{{ category.icon }}"></i>
+                            {% else %}
+                                <i class="fas fa-jar"></i>
+                            {% endif %}
+                        </div>
+                        <h5>
+                            <a href="{% url 'shop' %}?category={{ category.slug|default:category.name }}" class="btn btn-outline-honey btn-sm">
+                                {{ category.name }} Explore <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </h5>
+                        <p>{{ category.description|truncatewords:10 }}</p>
+                        {% if category.product_count %}
+                            <small class="text-muted">{{ category.product_count }} product{{ category.product_count|pluralize }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center">
+                    <div class="empty-state">
+                        <i class="fas fa-tags fa-3x text-muted mb-3"></i>
+                        <h5>No Categories</h5>
+                        <p class="text-muted">Categories will appear here once products are added.</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div class="about-content">
+                        <h2>About Our Honey</h2>
+                        <p class="lead">We are passionate about providing the highest quality, pure honey directly from trusted beekeepers around the world.</p>
+                        <div class="features-list">
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <strong>100% Pure</strong>
+                                    <p>No additives or artificial ingredients</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <strong>Raw & Unfiltered</strong>
+                                    <p>Retains all natural enzymes and nutrients</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <strong>Sustainably Sourced</strong>
+                                    <p>Supporting local beekeepers and bee conservation</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <strong>Quality Tested</strong>
+                                    <p>Each batch tested for purity and quality</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="about-image">
+                        <img src="{% static 'images/beekeeper.jpg' %}" alt="Beekeeper" class="img-fluid rounded-3 shadow">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2>Contact Us</h2>
+                <p class="text-muted">Get in touch with our team</p>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <form method="POST" action="{% url 'contact' %}" class="contact-form">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <input type="email" name="email" class="form-control" placeholder="Email Address" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <input type="tel" name="phone" class="form-control" placeholder="Phone Number">
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" name="subject" class="form-control" placeholder="Subject" required>
+                        </div>
+                        <div class="mb-3">
+                            <textarea name="message" class="form-control" rows="5" placeholder="Your Message" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-honey">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <div class="contact-info">
+                        <h5 class="mb-4">Get in Touch</h5>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <strong>Address</strong>
+                                <p>123 Honey Lane, Sweet Valley, HV 12345</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <strong>Phone</strong>
+                                <p>+1 (555) 123-HONEY</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <strong>Email</strong>
+                                <p>info@purehoneyshop.com</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <strong>Business Hours</strong>
+                                <p>Mon-Fri: 9AM-6PM<br>Sat-Sun: 10AM-4PM</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

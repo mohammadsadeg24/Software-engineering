@@ -1,0 +1,30 @@
+honey_project/                 # Root project directory
+├── honey_site/               # Project configuration (Django 'site')
+│   ├── __init__.py
+│   ├── settings.py           # MAIN PROJECT SETTINGS (Database, Apps, etc.)
+│   ├── urls.py               # MAIN URL ROUTER (Connects to app URLs)
+│   └── wsgi.py               # Entry point for production WSGI servers
+├── core/                     # YOUR MAIN DJANGO APP (for e-commerce models)
+│   ├── migrations/           # Auto-generated database schema files (keep them)
+│   │   └── __init__.py
+│   ├── __init__.py
+│   ├── admin.py              # Register models here to see them in Django Admin
+│   ├── apps.py               # App configuration
+│   ├── models.py             # YOUR MAIN MODELS (Product, Order, User, etc.)
+│   ├── urls.py               # App-specific URLs (e.g., /shop/, /product/)
+│   └── views.py              # App-specific view logic
+├── honey_api/                # A separate app for API endpoints (likely DRF)
+│   ├── __init__.py
+│   ├── serializers.py        # Converts models to/from JSON (for DRF)
+│   ├── urls.py               # API endpoints (e.g., /api/products/)
+│   └── views.py              # API view logic (often uses APIView/ViewSets)
+├── templates/                # HTML TEMPLATES (for front-end)
+│   ├── base.html             # Base template others inherit from
+│   ├── home.html
+│   └── shop.html
+├── static/                   # STATIC FILES (CSS, JS, Images) - for development
+│   └── css/
+│       └── style.css         # Your custom styles
+├── db.sqlite3                # SQLite database file (can be deleted and recreated)
+├── manage.py                 # DJANGO ADMIN SCRIPT (run commands like `runserver`)
+└── requirements.txt          # Project dependencies (Pipfile/Pipfile.lock is equivalent)
