@@ -12,9 +12,6 @@ class BaseMongoModel:
         self.collection = mongodb.database[collection_name]
     
     def create(self, data):
-        """Create a new document"""
-        data['created_at'] = datetime.now()
-        data['updated_at'] = datetime.now()
         result = self.collection.insert_one(data)
         return str(result.inserted_id)
     
@@ -80,7 +77,6 @@ class ProductManager(BaseMongoModel):
         super().__init__('products')
     
     def create_product(self, title, category_id, price, description="", variants=None):
-        """Create a new product"""
         data = {
             'title': title,
             'slug': self._generate_unique_slug(title),

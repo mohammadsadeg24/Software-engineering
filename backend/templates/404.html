@@ -191,7 +191,7 @@
 <body>
     <!-- Breadcrumb Navigation -->
     <div class="breadcrumb-nav">
-        <a href="{% url 'home' %}">
+        <a href="{% url 'index' %}">
             <i class="fas fa-home"></i> Home
         </a>
         <span class="text-muted"> / 404 Error</span>
@@ -216,7 +216,7 @@
         
         <!-- Action Buttons -->
         <div class="error-actions">
-            <a href="{% url 'home' %}" class="btn-home">
+            <a href="{% url 'index' %}" class="btn-home">
                 <i class="fas fa-home"></i> Go Home
             </a>
             <a href="{% url 'shop' %}" class="btn-shop">
@@ -228,7 +228,7 @@
         <div class="suggestions">
             <h5><i class="fas fa-lightbulb"></i> Here's what you can do:</h5>
             <ul>
-                <li><i class="fas fa-arrow-right text-warning"></i> <a href="{% url 'home' %}">Visit our homepage</a></li>
+                <li><i class="fas fa-arrow-right text-warning"></i> <a href="{% url 'index' %}">Visit our homepage</a></li>
                 <li><i class="fas fa-arrow-right text-warning"></i> <a href="{% url 'shop' %}">Browse our honey collection</a></li>
                 <li><i class="fas fa-arrow-right text-warning"></i> <a href="#" onclick="history.back()">Go back to the previous page</a></li>
                 <li><i class="fas fa-arrow-right text-warning"></i> <a href="#contact">Contact our support team</a></li>

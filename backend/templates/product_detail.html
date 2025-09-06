@@ -9,7 +9,7 @@
         <div class="container">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
                     <li class="breadcrumb-item"><a href="{% url 'shop' %}">Shop</a></li>
                     {% if product.category %}
                     <li class="breadcrumb-item"><a href="{% url 'shop' %}?category={{ product.category.slug }}">{{ product.category.name }}</a></li>
@@ -137,9 +137,9 @@
                                     <button type="submit" class="btn btn-honey btn-lg add-to-cart-btn">
                                         <i class="fas fa-cart-plus"></i> Add to Cart
                                     </button>
-                                    <button type="button" class="btn btn-outline-honey btn-lg" onclick="addToWishlist({{ product.id }})">
+                                    {% comment %} <button type="button" class="btn btn-outline-honey btn-lg" onclick="addToWishlist({{ product.id }})">
                                         <i class="far fa-heart"></i>
-                                    </button>
+                                    </button> {% endcomment %}
                                 </div>
                             </div>
                         </form>
@@ -421,7 +421,7 @@
         }
     }
     
-    function addToWishlist(productId) {
+    {% comment %} function addToWishlist(productId) {
         // Add to wishlist functionality
         fetch('{% url "add_to_wishlist" %}', {
             method: 'POST',
@@ -446,7 +446,7 @@
             }
         });
     }
-    
+     {% endcomment %}
     function shareProduct(platform) {
         const url = window.location.href;
         const title = '{{ product.title|escapejs }}';
