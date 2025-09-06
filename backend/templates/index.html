@@ -24,7 +24,7 @@
                 </div>
                 <div class="col-lg-6">
                     <div class="hero-image">
-                        <img src="{% static 'images/hero-honey.jpg' %}" alt="Premium Honey" class="img-fluid rounded-3 shadow-lg">
+                        <img src="{% static 'images/1153.png' %}" alt="Premium Honey" class="img-fluid rounded-3 shadow-lg">
                     </div>
                 </div>
             </div>
@@ -65,7 +65,7 @@
                             {% elif product.image %}
                                 <img src="{{ product.image }}" alt="{{ product.name }}" loading="lazy">
                             {% else %}
-                                <img src="{% static 'images/honey-jar-placeholder.jpg' %}" alt="{{ product.name }}" loading="lazy">
+                                <img src="{% static 'images/1.png' %}" alt="{{ product.name }}" loading="lazy">
                             {% endif %}
                             <div class="product-overlay">
                                 <a href="{% url 'product_detail' product.id %}" class="btn btn-honey btn-sm">
@@ -227,7 +227,7 @@
                 </div>
                 <div class="col-lg-6">
                     <div class="about-image">
-                        <img src="{% static 'images/beekeeper.jpg' %}" alt="Beekeeper" class="img-fluid rounded-3 shadow">
+                        <img src="{% static 'images/2.jpeg' %}" alt="Beekeeper" class="img-fluid rounded-3 shadow">
                     </div>
                 </div>
             </div>
