@@ -3,21 +3,16 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-
-    # Authentication
-    path('login/', views.login_view, name='login'),
-    path('register/', views.register_view, name='register'),
-    path('logout/', views.logout_view, name='logout'),
+    path('login/', views.login_user, name='login'),
+    path('register/', views.register_user, name='register'),
+    path('logout/', views.logout_user, name='logout'),
     
-    # User Profile
-    path('profile/', views.get_profile, name='get_profile'),
+    path('profile/', views.profile, name='profile'),
     path('profile/update/', views.update_profile, name='update_profile'),
-    # path('profile/', views.profile_view, name='profile'),
-    # path('profile/edit/', views.edit_profile_view, name='edit_profile'),
+    path('profile/change_password/', views.change_password, name='change_password'),
     
-    # Addresses
-    path('addresses/', views.get_addresses, name='get_addresses'),
+    # path('addresses/', views.get_addresses, name='get_addresses'),
     path('addresses/create/', views.create_address, name='create_address'),
-    path('addresses/<int:address_id>/update/', views.update_address, name='update_address'),
-    path('addresses/<int:address_id>/delete/', views.delete_address, name='delete_address')
+    path('addresses/<int:address_id>/delete/', views.delete_address, name='delete_address'),
+    path('addresses/<int:address_id>/update/', views.update_address, name='update_address')
 ]

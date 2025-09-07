@@ -118,10 +118,7 @@
                         <!-- Quantity and Add to Cart -->
                         <form method="POST" action="{% url 'add_to_cart' %}" class="add-to-cart-form">
                             {% csrf_token %}
-                            <input type="hidden" name="product_id" value="{{ product.id }}">
-                            {% if product.variants %}
-                                <input type="hidden" name="variant_id" id="selectedVariantId" value="{{ product.variants.0.id }}">
-                            {% endif %}
+                            <input type="hidden" name="product_slug" value="{{ product.slug }}">
                             
                             <div class="quantity-cart-section">
                                 <div class="quantity-selector">
@@ -178,24 +175,6 @@
                             {% endif %}
                         </div>
                         
-                        <!-- Social Share -->
-                        <div class="social-share mt-4">
-                            <h6>Share:</h6>
-                            <div class="share-buttons">
-                                <a href="#" class="share-btn facebook" onclick="shareProduct('facebook')">
-                                    <i class="fab fa-facebook-f"></i>
-                                </a>
-                                <a href="#" class="share-btn twitter" onclick="shareProduct('twitter')">
-                                    <i class="fab fa-twitter"></i>
-                                </a>
-                                <a href="#" class="share-btn pinterest" onclick="shareProduct('pinterest')">
-                                    <i class="fab fa-pinterest"></i>
-                                </a>
-                                <a href="#" class="share-btn whatsapp" onclick="shareProduct('whatsapp')">
-                                    <i class="fab fa-whatsapp"></i>
-                                </a>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -212,11 +191,6 @@
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="ingredients-tab" data-bs-toggle="tab" data-bs-target="#ingredients" type="button" role="tab">
-                        Ingredients
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
                     <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">
                         Reviews ({{ product.review_count|default:0 }})
                     </button>
@@ -226,39 +200,7 @@
                 <div class="tab-pane fade show active" id="description" role="tabpanel">
                     <div class="tab-content-inner">
                         <h5>Product Description</h5>
-                        <p>{{ product.long_description|default:product.description }}</p>
-                        
-                        {% if product.specifications %}
-                        <h6>Specifications:</h6>
-                        <table class="table table-striped">
-                            {% for spec_key, spec_value in product.specifications.items %}
-                            <tr>
-                                <td><strong>{{ spec_key|title }}</strong></td>
-                                <td>{{ spec_value }}</td>
-                            </tr>
-                            {% endfor %}
-                        </table>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="ingredients" role="tabpanel">
-                    <div class="tab-content-inner">
-                        <h5>Ingredients</h5>
-                        {% if product.ingredients %}
-                            <p>{{ product.ingredients }}</p>
-                        {% else %}
-                            <p>100% Pure Honey - No additives or preservatives</p>
-                        {% endif %}
-                        
-                        <h6>Nutritional Information (per 100g):</h6>
-                        <table class="table table-striped">
-                            <tr><td><strong>Energy</strong></td><td>1272 kJ / 304 kcal</td></tr>
-                            <tr><td><strong>Carbohydrates</strong></td><td>82.4g</td></tr>
-                            <tr><td><strong>Sugars</strong></td><td>82.12g</td></tr>
-                            <tr><td><strong>Protein</strong></td><td>0.3g</td></tr>
-                            <tr><td><strong>Fat</strong></td><td>0g</td></tr>
-                            <tr><td><strong>Salt</strong></td><td>0.004g</td></tr>
-                        </table>
+                        <p>{{ product.description }}</p>
                     </div>
                 </div>
                 <div class="tab-pane fade" id="reviews" role="tabpanel">
@@ -317,15 +259,25 @@
                         {% if user.is_authenticated %}
                         <div class="add-review-section">
                             <h6>Write a Review</h6>
-                            <form method="POST" action="{% url 'add_review' product.id %}">
+                            <form method="POST" action="{% url 'add_review' %}">
                                 {% csrf_token %}
                                 <div class="mb-3">
                                     <label class="form-label">Rating:</label>
                                     <div class="rating-input">
-                                        {% for i in "12345" %}
-                                        <input type="radio" name="rating" value="{{ i }}" id="star{{ i }}">
-                                        <label for="star{{ i }}"><i class="fas fa-star"></i></label>
-                                        {% endfor %}
+                                        <input type="radio" name="rating" value="5" id="star5" checked>
+                                        <label for="star5"><i class="fas fa-star">5</i></label>
+
+                                        <input type="radio" name="rating" value="4" id="star4">
+                                        <label for="star4"><i class="fas fa-star">4</i></label>
+
+                                        <input type="radio" name="rating" value="3" id="star3">
+                                        <label for="star3"><i class="fas fa-star">3</i></label>
+
+                                        <input type="radio" name="rating" value="2" id="star2">
+                                        <label for="star2"><i class="fas fa-star">2</i></label>
+
+                                        <input type="radio" name="rating" value="1" id="star1">
+                                        <label for="star1"><i class="fas fa-star">1</i></label>
                                     </div>
                                 </div>
                                 <div class="mb-3">

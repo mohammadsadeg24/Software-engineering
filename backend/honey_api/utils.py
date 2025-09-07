@@ -18,3 +18,12 @@ def generate_unique_slug(collection, title):
         counter += 1
     
     return slug
+
+def cart_total_amount(cart):
+    total_amount = 0
+    for item in cart['items']:
+        product_slug = item['product_slug']
+        product_price = mongodb.database['products'].find_one({"slug":product_slug})['price']
+        total_amount += item['quantity'] * product_price
+
+    return total_amount

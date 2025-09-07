@@ -9,9 +9,9 @@ import json
 from datetime import datetime
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from honey_api.serializer import mongo_serializer
+from honey_api.serializer import mongo_serializer, cart_serializer
 from mongodb_connector import mongodb
-from honey_api.utils import get_object_id, generate_unique_slug
+from honey_api.utils import get_object_id, generate_unique_slug, cart_total_amount
 from django.shortcuts import render
 
 from .mongo_models import CartManager, ProductManager, ReviewManager, OrderManager, CategoryManager
@@ -66,11 +66,17 @@ def product_list(request):
 def product_detail(request, slug):
     try:
         product = mongodb.database['products'].find_one({"slug": slug})
+        related_products = mongodb.database['products'].find({
+            "category_id": product['category_id'],
+            "_id": {"$ne": product['_id']} 
+        })
 
-        
         context = {
             'product': product,
+            'related_products': mongo_serializer(related_products)
         }
+
+        print(related_products)
 
         return render(request, 'product_detail.html', context)
         
@@ -125,61 +131,8 @@ def shop(request):
         return render(request, '404.html', {'detail': str(e)}, status=404)
 
 
-# -------------------------
-# Helpers
-# -------------------------
-def json_response(data, status=200):
-    return JsonResponse(data, status=status, safe=False)
-
-def error_response(message, status=400):
-    return JsonResponse({'error': message}, status=status)
-
-# -------------------------
-# Home / Categories
-# -------------------------
-
-@csrf_exempt
 @require_http_methods(["POST"])
-def create_category(request):
-    try:
-        data = json.loads(request.body)
-        record = {
-            'name': data.get('name'),
-            'slug': generate_unique_slug(collection='categories', title=data.get('name')),
-            'description': data.get('description', ''),
-            'parent_id': get_object_id(data.get('parent_id')) if data.get('parent_id') else None
-        }
-        mongodb.database['categories'].insert_one(record)
-        return redirect('category_list')
-    except Exception as e:
-        return render(request, '404.html', {'detail': str(e)}, status=500)
-
-
-# -------------------------
-# Profile
-# -------------------------
-@login_required
-def profile_view(request):
-    return render(request, 'profile.html', {'user': request.user, 'page_title': 'Profile'})
-
-@login_required
-def edit_profile_view(request):
-    if request.method == "POST":
-        try:
-            user = request.user
-            user.first_name = request.POST.get('first_name')
-            user.last_name = request.POST.get('last_name')
-            user.email = request.POST.get('email')
-            user.save()
-            messages.success(request, "Profile updated successfully!")
-            return redirect('profile')
-        except Exception as e:
-            messages.error(request, str(e))
-            return render(request, 'profile.html', {'error': str(e)})
-    return render(request, 'edit_profile.html', {'user': request.user})
-
-@require_http_methods(["POST"])
-def contact_view(request):
+def contact(request):
     try:
         mongodb.database['contacts'].insert_one({
             'name': request.POST.get('name'),
@@ -189,14 +142,123 @@ def contact_view(request):
             'date': datetime.now()
         })
         messages.success(request, "Message sent successfully!")
-        return redirect('home')
+        return redirect('index')
     except Exception as e:
         messages.error(request, str(e))
         return render(request, '404.html', {'detail': str(e)}, status=500)
 
-# -------------------------
-# Product & Reviews
-# -------------------------
+
+@login_required
+@require_http_methods(["GET"])
+def cart_view(request):
+    try:
+        user_cart = mongodb.database['carts'].find_one({"user_id": request.user.id})
+
+        if not user_cart:
+            user_cart = CartManager()
+            user_cart.create_cart(request.user.id)        
+            user_cart = mongodb.database['carts'].find_one({"user_id": request.user.id})
+
+        context = {
+            'cart': cart_serializer(user_cart)
+        }
+
+        return render(request, 'cart.html', context)
+    except Exception as e:
+        messages.error(request, str(e))
+        return render(request, '404.html', {'detail': str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@login_required
+def add_to_cart(request):
+    try:
+        user_cart = mongodb.database['carts'].find_one({"user_id": request.user.id})
+
+        if not user_cart:
+            user_cart = CartManager()
+            user_cart.create_cart(request.user.id)        
+            user_cart = mongodb.database['carts'].find_one({"user_id": request.user.id})
+
+        data = request.POST
+        product_slug = data.get('product_slug')
+        quantity = int(data.get('quantity'))
+
+        item_exists = False
+        for item in user_cart['items']:
+            if item['product_slug'] == product_slug: 
+                item['quantity'] += quantity
+                item_exists = True
+        
+        if not item_exists:
+            new_item = {
+                'product_slug': product_slug,
+                'quantity': quantity,
+            }
+            user_cart['items'].append(new_item)
+        
+        total_amount = cart_total_amount(user_cart)
+        
+        mongodb.database['carts'].update_one(
+            {"user_id": int(request.user.id)},
+            {"$set": {"items": user_cart['items'], "total_amount": total_amount}}
+        )
+
+        messages.success(request, "Item successfully added to your cart.")
+        return redirect(request.META.get('HTTP_REFERER', '/')) 
+    except Exception as e:
+        messages.error(request, str(e))
+        return render(request, '404.html', {'detail': str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@login_required
+def remove_from_cart(request, slug):
+    try:
+        user_cart = mongodb.database['carts'].find_one({'user_id': request.user.id})
+        items = []
+
+        for item in user_cart['items']:
+            if item['product_slug'] != slug:
+                items.append(item)
+
+        mongodb.database['carts'].update_one(
+            {'user_id': request.user.id},
+            {"$set": {"items": items}} 
+        )
+
+        messages.success(request, "Item successfully removed from your cart.")
+        return redirect(request.META.get('HTTP_REFERER', '/')) 
+    except Exception as e:
+        messages.error(request, str(e))
+        return render(request, '404.html', {'detail': str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@login_required
+def clear_cart(request):
+    try:
+        user_cart = mongodb.database['carts'].find_one({'user_id': request.user.id})
+
+        if len(user_cart['items']):
+            messages.success(request, "Your cart has been successfully cleared.")
+        else:
+            messages.success(request, "Your cart is already empty.")
+
+        mongodb.database['carts'].update_one(
+            {'user_id': request.user.id},
+            {"$set": {"items": []}} 
+        )
+
+        return redirect(request.META.get('HTTP_REFERER', '/')) 
+    except Exception as e:
+        messages.error(request, str(e))
+        return render(request, '404.html', {'detail': str(e)}, status=500)
+
+
 @require_http_methods(["GET"])
 def product_reviews(request, product_id):
     try:
@@ -212,64 +274,37 @@ def product_reviews(request, product_id):
             "limit": limit
         })
     except Exception as e:
-        return error_response(str(e), 500)
-
-# -------------------------
-# Cart
-# -------------------------
-@login_required
-def cart_view(request):
-    try:
-        cart_manager = CartManager()
-        user_cart = cart_manager.get_or_create_cart(request.user.id)
-        return render(request, 'cart.html', {'cart': user_cart})
-    except Exception as e:
         messages.error(request, str(e))
-        return render(request, 'cart.html', {'cart': None})
-
-
-@require_http_methods(["GET"])
-@login_required
-def get_cart(request):
-    try:
-        cart_manager = CartManager()
-        user_cart = cart_manager.get_or_create_cart(request.user.id)
-        return json_response(user_cart)
-    except Exception as e:
-        return error_response(str(e), 500)
-
+        return render(request, '404.html', {'detail': str(e)}, status=500)
 
 @csrf_exempt
 @require_http_methods(["POST"])
 @login_required
-def add_to_cart(request):
-    try:
-        data = json.loads(request.body)
-        updated_cart = CartManager.add_item(
-            user_id=request.user.id,
-            product_id=data.get('product_id'),
-            quantity=int(data.get('quantity', 1))
-        )
-        return json_response({"success": True, "cart": updated_cart})
-    except Exception as e:
-        return error_response(str(e), 500)
+def add_review(request):
+    print("TEST")
+    # try:
+    #     data = json.loads(request.body)
+    #     print(data)
+    #     raise
+
+    # except Exception as e:
+    #     messages.error(request, str(e))
+    #     return render(request, '404.html', {'detail': str(e)}, status=500)
+# not complete
+
+def json_response(data, status=200):
+    return JsonResponse(data, status=status, safe=False)
+
+def error_response(message, status=400):
+    return JsonResponse({'error': message}, status=status)
 
 
-@csrf_exempt
-@require_http_methods(["DELETE"])
-@login_required
-def remove_from_cart(request, product_id):
-    try:
-        success = CartManager.remove_item(request.user.id, product_id)
-        if success:
-            return json_response({"success": True, "message": "Item removed"})
-        return error_response("Item not found", 404)
-    except Exception as e:
-        return error_response(str(e), 500)
 
-# -------------------------
-# Orders
-# -------------------------
+
+
+
+
+
 @csrf_exempt
 @require_http_methods(["POST"])
 @login_required
@@ -286,6 +321,7 @@ def create_order(request):
     except Exception as e:
         return error_response(str(e), 500)
 
+
 @require_http_methods(["GET"])
 @login_required
 def get_orders(request):
@@ -297,6 +333,7 @@ def get_orders(request):
         return json_response({"orders": user_orders, "page": page, "limit": limit})
     except Exception as e:
         return error_response(str(e), 500)
+
 
 @require_http_methods(["GET"])
 @login_required

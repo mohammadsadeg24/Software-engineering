@@ -45,12 +45,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#about">
+                            <a class="nav-link" href="{% url 'index' %}#about">
                                 <i class="fas fa-info-circle"></i> About
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#contact">
+                            <a class="nav-link" href="{% url 'index' %}#contact">
                                 <i class="fas fa-envelope"></i> Contact
                             </a>
                         </li>
@@ -60,9 +60,6 @@
                     <div class="navbar-nav me-3">
                         <a class="nav-link position-relative" href="{% url 'cart' %}">
                             <i class="fas fa-shopping-cart"></i>
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark" id="cart-count">
-                                0
-                            </span>
                         </a>
                     </div>
 

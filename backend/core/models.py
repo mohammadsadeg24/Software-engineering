@@ -3,7 +3,6 @@ from django.db import models
 from django.core.validators import RegexValidator
 
 class User(AbstractUser):
-    
     PHONE_NUMBER_VALIDATOR = RegexValidator(
         regex=r'^0\d{10}$',
     )

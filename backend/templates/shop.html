@@ -14,7 +14,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
-                            <li class="breadcrumb-item active">Shop</li>
+                            <li class="breadcrumb-item active"><a href="{% url 'shop' %}">Shop</a></li>
                         </ol>
                     </nav>
                 </div>
@@ -154,21 +154,16 @@
                             
                             <form class="add-to-cart-form" method="POST" action="{% url 'add_to_cart' %}">
                                 {% csrf_token %}
-                                <input type="hidden" name="product_id" value="{{ product.id }}">
-                                {% if product.variants and product.variants|length > 0 %}
-                                    <input type="hidden" name="variant_id" class="variant-id" value="{{ product.variants.0.id|default:0 }}">
-                                {% endif %}
-                                
+                                <input type="hidden" name="product_slug" value="{{ product.slug }}">
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="quantity-controls">
                                         <button type="button" class="qty-btn" onclick="decreaseQuantity(this)">-</button>
                                         <input type="number" name="quantity" value="1" min="1" max="{{ product.stock|default:999 }}" class="qty-input">
                                         <button type="button" class="qty-btn" onclick="increaseQuantity(this)">+</button>
                                     </div>
-                                    <button type="submit" class="btn btn-honey btn-sm flex-grow-1" 
-                                            {% if product.stock == 0 %}disabled{% endif %}>
+                                    <button type="submit" class="btn btn-honey btn-sm flex-grow-1">
                                         <i class="fas fa-cart-plus"></i> 
-                                        {% if product.stock == 0 %}Out of Stock{% else %}Add to Cart{% endif %}
+                                        Add to Cart
                                     </button>
                                 </div>
                             </form>

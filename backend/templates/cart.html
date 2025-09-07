@@ -13,7 +13,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
-                            <li class="breadcrumb-item active">Cart</li>
+                            <li class="breadcrumb-item active"><a href="{% url 'cart' %}">Cart</a></li>
                         </ol>
                     </nav>
                 </div>
@@ -24,16 +24,16 @@
     <!-- Cart Content -->
     <section class="cart-section">
         <div class="container">
-            {% if cart_items %}
+            {% if cart %}
             <div class="row">
                 <!-- Cart Items -->
                 <div class="col-lg-8">
                     <div class="cart-items">
                         <div class="cart-header">
-                            <h4>Cart Items ({{ cart_items|length }} item{{ cart_items|length|pluralize }})</h4>
+                            <h4>Cart Items ({{ cart.items|length }} item{{ cart.items|length|pluralize }})</h4>
                         </div>
                         
-                        {% for item in cart_items %}
+                        {% for item in cart.items %}
                         <div class="cart-item" data-item-id="{{ item.id }}">
                             <div class="item-image">
                                 {% if item.product.image %}
@@ -44,15 +44,9 @@
                             </div>
                             
                             <div class="item-details">
-                                <h5><a href="{% url 'product_detail' item.product.id %}">{{ item.product.name }}</a></h5>
-                                {% if item.variant %}
-                                <p class="item-variant">Size: {{ item.variant.size }}</p>
-                                {% endif %}
+                                <h5><a href="{% url 'product_detail' item.slug %}">{{ item.title }}</a></h5>
                                 <p class="item-price">
-                                    <span class="unit-price">${{ item.unit_price|floatformat:2 }}</span>
-                                    {% if item.product.original_price and item.product.original_price > item.unit_price %}
-                                        <span class="original-price">${{ item.product.original_price|floatformat:2 }}</span>
-                                    {% endif %}
+                                    <span class="unit-price">${{ item.price|floatformat:2 }}</span>
                                 </p>
                                 
                                 <!-- Product Features -->
@@ -76,11 +70,15 @@
                             </div>
                             
                             <div class="item-total">
-                                <div class="total-price">${{ item.total_price|floatformat:2 }}</div>
-                                <button class="btn btn-outline-danger btn-sm remove-item" onclick="removeItem({{ item.id }})">
-                                    <i class="fas fa-trash"></i> Remove
-                                </button>
+                                <div class="total-price">${{ item.total_amount|floatformat:2 }}</div>
+                                <form method="POST" action="{% url 'remove_from_cart' item.slug %}" style="display:inline;">
+                                {% csrf_token %}
+                                    <button class="btn btn-outline-danger btn-sm remove-item" onclick="removeItem({{ item.slug }})">
+                                        <i class="fas fa-trash"></i> Remove
+                                    </button> 
+                                </form>
                             </div>
+
                         </div>
                         {% endfor %}
                         
@@ -89,10 +87,13 @@
                             <a href="{% url 'shop' %}" class="btn btn-outline-honey">
                                 <i class="fas fa-arrow-left"></i> Continue Shopping
                             </a>
-                            <button class="btn btn-outline-secondary" onclick="clearCart()">
-                                <i class="fas fa-trash-alt"></i> Clear Cart
-                            </button>
-                        </div>
+                            <form method="POST" action="{% url 'clear_cart' %}" style="display:inline;">
+                            {% csrf_token %}
+                                <button class="btn btn-outline-secondary"">
+                                    <i class="fas fa-trash-alt"></i> Clear Cart
+                                </button> 
+                            </form>
+                        </div> 
                     </div>
                 </div>
                 
@@ -102,16 +103,9 @@
                         <h4>Order Summary</h4>
                         
                         <div class="summary-line">
-                            <span>Subtotal ({{ cart_items|length }} item{{ cart_items|length|pluralize }}):</span>
-                            <span class="subtotal">${{ cart_subtotal|floatformat:2 }}</span>
+                            <span>Subtotal ({{ cart.items|length }} item{{ cart_items|length|pluralize }}):</span>
+                            <span class="subtotal">${{ cart.subtotal|floatformat:2 }}</span>
                         </div>
-                        
-                        {% if cart_discount > 0 %}
-                        <div class="summary-line discount">
-                            <span>Discount:</span>
-                            <span>-${{ cart_discount|floatformat:2 }}</span>
-                        </div>
-                        {% endif %}
                         
                         <div class="summary-line">
                             <span>Shipping:</span>
@@ -119,89 +113,30 @@
                                 {% if free_shipping %}
                                     <span class="text-success">FREE</span>
                                 {% else %}
-                                    ${{ shipping_cost|floatformat:2 }}
+                                    ${{ cart.shipping|floatformat:2 }}
                                 {% endif %}
                             </span>
                         </div>
                         
-                        {% if not free_shipping and free_shipping_threshold %}
-                        <div class="shipping-notice">
-                            <small class="text-muted">
-                                <i class="fas fa-truck"></i>
-                                Add ${{ free_shipping_remaining|floatformat:2 }} more for free shipping!
-                            </small>
-                        </div>
-                        {% endif %}
-                        
                         <div class="summary-line">
                             <span>Tax:</span>
-                            <span class="tax">${{ cart_tax|floatformat:2 }}</span>
+                            <span class="tax">${{ cart.tax|floatformat:2 }}</span>
                         </div>
                         
-                        <hr>
                         
-                        <div class="summary-line total">
+                        <div class="summary-line">
                             <span><strong>Total:</strong></span>
-                            <span><strong class="total-amount">${{ cart_total|floatformat:2 }}</strong></span>
-                        </div>
-                        
-                        <!-- Promo Code -->
-                        <div class="promo-section">
-                            <form method="POST" action="{% url 'apply_coupon' %}">
-                                {% csrf_token %}
-                                <div class="input-group">
-                                    <input type="text" name="coupon_code" class="form-control" 
-                                           placeholder="Enter promo code" value="{{ applied_coupon.code|default:'' }}">
-                                    <button type="submit" class="btn btn-outline-honey">Apply</button>
-                                </div>
-                            </form>
-                            {% if applied_coupon %}
-                            <div class="applied-coupon">
-                                <small class="text-success">
-                                    <i class="fas fa-check"></i> Coupon "{{ applied_coupon.code }}" applied
-                                    <button type="button" class="btn-close btn-sm" onclick="removeCoupon()"></button>
-                                </small>
-                            </div>
-                            {% endif %}
+                            <span><strong class="total-amount">${{ cart.total|floatformat:2 }}</strong></span>
                         </div>
                         
                         <!-- Checkout Button -->
                         <div class="checkout-section">
-                            {% if user.is_authenticated %}
-                                <a href="{% url 'checkout' %}" class="btn btn-honey btn-lg w-100">
-                                    <i class="fas fa-credit-card"></i> Proceed to Checkout
-                                </a>
-                            {% else %}
-                                <a href="{% url 'login' %}?next={% url 'checkout' %}" class="btn btn-honey btn-lg w-100">
-                                    <i class="fas fa-sign-in-alt"></i> Login to Checkout
-                                </a>
-                                <div class="guest-checkout">
-                                    <small class="text-muted">or</small>
-                                    <a href="{% url 'guest_checkout' %}" class="btn btn-outline-honey btn-sm w-100 mt-2">
-                                        Continue as Guest
-                                    </a>
-                                </div>
-                            {% endif %}
-                        </div>
-                        
-                        <!-- Security badges -->
-                        <div class="security-badges">
-                            <small class="text-muted d-flex align-items-center justify-content-center">
-                                <i class="fas fa-shield-alt me-2"></i>
-                                Secure SSL Encryption
-                            </small>
-                            <div class="payment-methods">
-                                <small class="text-muted">We accept:</small>
-                                <div class="payment-icons">
-                                    <i class="fab fa-cc-visa"></i>
-                                    <i class="fab fa-cc-mastercard"></i>
-                                    <i class="fab fa-cc-paypal"></i>
-                                    <i class="fab fa-cc-stripe"></i>
-                                </div>
-                            </div>
+                            <a href="{% url 'checkout' %}" class="btn btn-honey btn-lg w-100">
+                                <i class="fas fa-credit-card"></i> Proceed to Checkout
+                            </a>
                         </div>
                     </div>
-                </div>
+                </div> 
             </div>
             
             {% else %}
@@ -217,204 +152,6 @@
                 </div>
             </div>
             {% endif %}
-            
-            <!-- Recommended Products -->
-            {% if recommended_products %}
-            <div class="recommended-section mt-5">
-                <h4>You might also like</h4>
-                <div class="row">
-                    {% for product in recommended_products %}
-                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                        <div class="product-card">
-                            <div class="product-image">
-                                {% if product.image %}
-                                    <img src="{{ product.image }}" alt="{{ product.name }}" loading="lazy">
-                                {% else %}
-                                    <img src="{% static 'images/honey-jar-placeholder.jpg' %}" alt="{{ product.name }}" loading="lazy">
-                                {% endif %}
-                                <div class="product-overlay">
-                                    <a href="{% url 'product_detail' product.id %}" class="btn btn-honey btn-sm">
-                                        <i class="fas fa-eye"></i> View
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="product-info">
-                                <h6><a href="{% url 'product_detail' product.id %}">{{ product.name }}</a></h6>
-                                <div class="product-price">
-                                    <span class="price">${{ product.price|floatformat:2 }}</span>
-                                </div>
-                                <button class="btn btn-honey btn-sm" onclick="addToCartQuick({{ product.id }})">
-                                    <i class="fas fa-cart-plus"></i> Add to Cart
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
         </div>
     </section>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    function updateQuantity(itemId, quantity) {
-        if (quantity < 1) {
-            quantity = 1;
-        }
-        
-        fetch(`{% url 'update_cart_item' 0 %}`.replace('0', itemId), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-            },
-            body: JSON.stringify({
-                'quantity': quantity
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Update item total
-                const itemCard = document.querySelector(`[data-item-id="${itemId}"]`);
-                itemCard.querySelector('.total-price').textContent = ' + data.item_total.toFixed(2);
-                
-                // Update cart summary
-                updateCartSummary(data.cart_summary);
-                updateCartCount();
-            } else {
-                showToast('Error updating quantity', 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showToast('Error updating quantity', 'error');
-        });
-    }
-    
-    function increaseQuantity(itemId) {
-        const input = document.querySelector(`[data-item-id="${itemId}"] .qty-input`);
-        const newQuantity = parseInt(input.value) + 1;
-        input.value = newQuantity;
-        updateQuantity(itemId, newQuantity);
-    }
-    
-    function decreaseQuantity(itemId) {
-        const input = document.querySelector(`[data-item-id="${itemId}"] .qty-input`);
-        const currentQuantity = parseInt(input.value);
-        if (currentQuantity > 1) {
-            const newQuantity = currentQuantity - 1;
-            input.value = newQuantity;
-            updateQuantity(itemId, newQuantity);
-        }
-    }
-    
-    function removeItem(itemId) {
-        if (confirm('Are you sure you want to remove this item from your cart?')) {
-            fetch(`{% url 'remove_cart_item' 0 %}`.replace('0', itemId), {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Remove item from DOM
-                    document.querySelector(`[data-item-id="${itemId}"]`).remove();
-                    
-                    // Update cart summary
-                    updateCartSummary(data.cart_summary);
-                    updateCartCount();
-                    
-                    // Check if cart is empty
-                    const remainingItems = document.querySelectorAll('.cart-item');
-                    if (remainingItems.length === 0) {
-                        location.reload(); // Reload to show empty cart message
-                    }
-                    
-                    showToast('Item removed from cart', 'success');
-                } else {
-                    showToast('Error removing item', 'error');
-                }
-            });
-        }
-    }
-    
-    function clearCart() {
-        if (confirm('Are you sure you want to clear your entire cart?')) {
-            fetch(`{% url 'clear_cart' %}`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    showToast('Error clearing cart', 'error');
-                }
-            });
-        }
-    }
-    
-    function removeCoupon() {
-        fetch(`{% url 'remove_coupon' %}`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                showToast('Error removing coupon', 'error');
-            }
-        });
-    }
-    
-    function addToCartQuick(productId) {
-        fetch(`{% url 'add_to_cart' %}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-            },
-            body: JSON.stringify({
-                'product_id': productId,
-                'quantity': 1
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showToast('Added to cart!', 'success');
-                updateCartCount();
-            } else {
-                showToast('Error adding to cart', 'error');
-            }
-        });
-    }
-    
-    function updateCartSummary(summary) {
-        if (summary) {
-            document.querySelector('.subtotal').textContent = ' + summary.subtotal.toFixed(2);
-            document.querySelector('.shipping-cost').innerHTML = summary.shipping_cost > 0 ? 
-                ' + summary.shipping_cost.toFixed(2) : '<span class="text-success">FREE</span>';
-            document.querySelector('.tax').textContent = ' + summary.tax.toFixed(2);
-            document.querySelector('.total-amount').textContent = ' + summary.total.toFixed(2);
-            
-            // Update cart header
-            const itemCount = summary.item_count;
-            document.querySelector('.cart-header h4').textContent = 
-                `Cart Items (${itemCount} item${itemCount !== 1 ? 's' : ''})`;
-        }
-    }
-</script>
 {% endblock %}

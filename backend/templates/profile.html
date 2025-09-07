@@ -177,7 +177,7 @@
                         <div class="tab-pane fade" id="edit-profile">
                             <div class="profile-section">
                                 <h3>Edit Profile</h3>
-                                <form method="POST" enctype="multipart/form-data" action="{% url 'profile_update' %}">
+                                <form method="POST" enctype="multipart/form-data" action="{% url 'update_profile' %}">
                                     {% csrf_token %}
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
@@ -191,33 +191,12 @@
                                                    value="{{ user.last_name }}" required>
                                         </div>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">Email Address</label>
-                                        <input type="email" name="email" id="email" class="form-control" 
-                                               value="{{ user.email }}" required>
-                                    </div>
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label for="phone_number" class="form-label">Phone Number</label>
-                                            <input type="tel" name="phone_number" id="phone_number" class="form-control" 
-                                                   value="{{ user.profile.phone_number|default:'' }}">
+                                            <input type="tel" name="phone" id="phone" class="form-control" 
+                                                   value="{{ user.phone }}">
                                         </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="date_of_birth" class="form-label">Date of Birth</label>
-                                            <input type="date" name="date_of_birth" id="date_of_birth" class="form-control" 
-                                                   value="{{ user.profile.date_of_birth|date:'Y-m-d' }}">
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="avatar" class="form-label">Profile Picture</label>
-                                        <input type="file" name="avatar" id="avatar" class="form-control" accept="image/*">
-                                        {% if user.profile.avatar %}
-                                        <small class="text-muted">Current: <a href="{{ user.profile.avatar.url }}" target="_blank">View current picture</a></small>
-                                        {% endif %}
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="bio" class="form-label">Bio</label>
-                                        <textarea name="bio" id="bio" class="form-control" rows="3">{{ user.profile.bio|default:'' }}</textarea>
                                     </div>
                                     <button type="submit" class="btn btn-honey">
                                         <i class="fas fa-save"></i> Update Profile
@@ -311,29 +290,28 @@
                                             {% endif %}
                                         </div>
                                         <div class="address-details">
-                                            <p><strong>{{ address.full_name }}</strong></p>
-                                            <p>{{ address.street_address }}</p>
-                                            {% if address.apartment %}
-                                            <p>{{ address.apartment }}</p>
-                                            {% endif %}
+                                            <p><strong>{{ address.name }}</strong></p>
+                                            <p>{{ address.address }}</p>
                                             <p>{{ address.city }}, {{ address.state }} {{ address.postal_code }}</p>
                                             <p>{{ address.country }}</p>
-                                            {% if address.phone %}
-                                            <p><i class="fas fa-phone"></i> {{ address.phone }}</p>
-                                            {% endif %}
                                         </div>
                                         <div class="address-actions">
-                                            <button class="btn btn-outline-honey btn-sm" onclick="editAddress({{ address.id }})">
-                                                <i class="fas fa-edit"></i> Edit
-                                            </button>
-                                            {% if not address.is_default %}
-                                            <button class="btn btn-outline-primary btn-sm" onclick="setDefaultAddress({{ address.id }})">
-                                                Set Default
-                                            </button>
-                                            {% endif %}
-                                            <button class="btn btn-outline-danger btn-sm" onclick="deleteAddress({{ address.id }})">
-                                                <i class="fas fa-trash"></i> Delete
-                                            </button>
+                                            <form method="GET" action="{% url 'update_address' address.id %}" style="display:inline;">
+                                                <button type="submit" class="btn btn-outline-honey btn-sm">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </button>
+                                            </form>
+
+
+                                            <form method="POST" action="{% url 'delete_address' address.id %}" style="display:inline;">
+                                            {% csrf_token %}
+                                                <button class="btn btn-outline-honey btn-sm" 
+                                                    onclick="return confirm('Are you sure you want to delete this address?');">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </form>
+
+
                                         </div>
                                     </div>
                                     {% endfor %}
@@ -427,26 +405,18 @@
                     <h5 class="modal-title">Add New Address</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form method="POST" action="{% url 'add_address' %}">
+                <form method="POST" action="{% url 'create_address' %}">
                     {% csrf_token %}
                     <div class="modal-body">
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="full_name" class="form-label">Full Name</label>
-                                <input type="text" name="full_name" id="full_name" class="form-control" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="phone" class="form-label">Phone Number</label>
-                                <input type="tel" name="phone" id="phone" class="form-control">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Name for this address (e.g., 'Home', 'Office')</label>
+                                <input type="text" name="name" id="name" class="form-control" required>
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="street_address" class="form-label">Street Address</label>
-                            <input type="text" name="street_address" id="street_address" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="apartment" class="form-label">Apartment, suite, etc. (optional)</label>
-                            <input type="text" name="apartment" id="apartment" class="form-control">
+                            <label for="address" class="form-label">Street Address</label>
+                            <input type="text" name="address" id="_address" class="form-control" required>
                         </div>
                         <div class="row">
                             <div class="col-md-4 mb-3">
@@ -472,14 +442,6 @@
                                 <!-- Add more countries as needed -->
                             </select>
                         </div>
-                        <div class="mb-3">
-                            <label for="type" class="form-label">Address Type</label>
-                            <select name="type" id="type" class="form-select" required>
-                                <option value="home">Home</option>
-                                <option value="work">Work</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="is_default" id="is_default">
                             <label class="form-check-label" for="is_default">
@@ -499,6 +461,8 @@
 
 {% block extra_js %}
 <script>
+    {% comment %} 
+
     function reorderItems(orderId) {
         fetch(`{% url 'reorder' 0 %}`.replace('0', orderId), {
             method: 'POST',
@@ -595,25 +559,8 @@
             }
         });
     }
-    
-    function deleteAddress(addressId) {
-        if (confirm('Are you sure you want to delete this address?')) {
-            fetch(`{% url 'delete_address' 0 %}`.replace('0', addressId), {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showToast('Address deleted', 'success');
-                    location.reload();
-                } else {
-                    showToast('Error deleting address', 'error');
-                }
-            });
-        }
-    }
+
+    {% endcomment %}
+
 </script>
 {% endblock %}
