@@ -89,7 +89,7 @@
                             {% elif product.image %}
                                 <img src="{{ product.image }}" alt="{{ product.title }}" loading="lazy">
                             {% else %}
-                                <img src="{% static 'images/honey-jar-placeholder.jpg' %}" alt="{{ product.title }}" loading="lazy">
+                                <img src="{% static 'images/1.png' %}" alt="{{ product.title }}" loading="lazy">
                             {% endif %}
                             <div class="product-overlay">
                                 <a href="{% url 'product_detail' product.slug %}" class="btn btn-honey btn-sm me-2">

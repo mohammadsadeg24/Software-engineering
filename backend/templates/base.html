@@ -64,7 +64,7 @@
                     </div>
 
                     <!-- User Profile Dropdown -->
-                    {% if user.is_authenticated %}
+                    {% comment %} {% if user.is_authenticated %}
                     <div class="dropdown user-profile">
                         <button class="btn dropdown-toggle text-white" type="button" data-bs-toggle="dropdown">
                             <i class="fas fa-user-circle"></i> {{ user.first_name|default:user.username }}
@@ -72,6 +72,29 @@
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user"></i> My Profile</a></li>
                             <li><a class="dropdown-item" href="{% url 'profile' %}#orders"><i class="fas fa-shopping-bag"></i> My Orders</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <div class="auth-buttons">
+                        <a class="btn btn-outline-light me-2" href="{% url 'login' %}">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                        <a class="btn btn-warning" href="{% url 'register' %}">
+                            <i class="fas fa-user-plus"></i> Register
+                        </a>
+                    </div>
+                    {% endif %} {% endcomment %}
+                    <!-- In base.html, replace the existing auth-buttons section with: -->
+                    {% if user.is_authenticated %}
+                    <div class="dropdown user-profile">
+                        <button class="btn dropdown-toggle text-white" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle"></i> {{ user.username }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user"></i> My Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'orders' %}"><i class="fas fa-shopping-bag"></i> My Orders</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                         </ul>
