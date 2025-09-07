@@ -51,63 +51,16 @@ class ReviewManager(BaseMongoModel):
     def __init__(self):
         super().__init__('reviews')
     
-    def create_review(self, user_id, product_id, rating, comment=""):
-        """Create a new review"""
-        # Check if user already reviewed this product
-        existing = self.collection.find_one({
-            "user_id": int(user_id),
-            "product_id": get_object_id(product_id)
-        })
-        
-        if existing:
-            raise ValueError("User has already reviewed this product")
-        
+    def create_review(self, user_id, product_slug, rating, comment):
         data = {
             'user_id': int(user_id),  
-            'product_id': get_object_id(product_id),
+            'product_slug': product_slug,
             'rating': int(rating),
             'comment': comment,
             'date': datetime.now()
         }
-        elf.create(data)
+        self.create(data)
     
-    def get_product_reviews(self, product_id, limit=20, skip=0):
-        """Get reviews for a product"""
-        return self.find_all(
-            {"product_id": get_object_id(product_id)},
-            limit=limit,
-            skip=skip,
-            sort=[("date", -1)]
-        )
-    
-    def get_product_rating_summary(self, product_id):
-        """Get rating summary for a product"""
-        pipeline = [
-            {"$match": {"product_id": get_object_id(product_id)}},
-            {"$group": {
-                "_id": None,
-                "average_rating": {"$avg": "$rating"},
-                "total_reviews": {"$sum": 1},
-                "rating_counts": {
-                    "$push": "$rating"
-                }
-            }}
-        ]
-        
-        result = list(self.collection.aggregate(pipeline))
-        if not result:
-            return {"average_rating": 0, "total_reviews": 0}
-        
-        summary = result[0]
-        rating_distribution = {}
-        for rating in summary.get('rating_counts', []):
-            rating_distribution[rating] = rating_distribution.get(rating, 0) + 1
-        
-        return {
-            "average_rating": round(summary.get('average_rating', 0), 2),
-            "total_reviews": summary.get('total_reviews', 0),
-            "rating_distribution": rating_distribution
-        }
 
 class CartManager(BaseMongoModel):
     def __init__(self):

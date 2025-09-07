@@ -9,12 +9,13 @@ import json
 from datetime import datetime
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from honey_api.serializer import mongo_serializer, cart_serializer
+from honey_api.serializer import mongo_serializer, cart_serializer, review_serializer
 from mongodb_connector import mongodb
 from honey_api.utils import get_object_id, generate_unique_slug, cart_total_amount
 from django.shortcuts import render
 
 from .mongo_models import CartManager, ProductManager, ReviewManager, OrderManager, CategoryManager
+
 
 @require_http_methods(["GET"])
 def index(request):
@@ -66,6 +67,7 @@ def product_list(request):
 def product_detail(request, slug):
     try:
         product = mongodb.database['products'].find_one({"slug": slug})
+        reviews = mongodb.database['reviews'].find({"product_slug": slug})
         related_products = mongodb.database['products'].find({
             "category_id": product['category_id'],
             "_id": {"$ne": product['_id']} 
@@ -73,6 +75,7 @@ def product_detail(request, slug):
 
         context = {
             'product': product,
+            'reviews': review_serializer(reviews),
             'related_products': mongo_serializer(related_products)
         }
 
@@ -277,19 +280,28 @@ def product_reviews(request, product_id):
         messages.error(request, str(e))
         return render(request, '404.html', {'detail': str(e)}, status=500)
 
-@csrf_exempt
-@require_http_methods(["POST"])
-@login_required
-def add_review(request):
-    print("TEST")
-    # try:
-    #     data = json.loads(request.body)
-    #     print(data)
-    #     raise
 
-    # except Exception as e:
-    #     messages.error(request, str(e))
-    #     return render(request, '404.html', {'detail': str(e)}, status=500)
+@require_http_methods(["POST"])
+def add_review(request):
+    try:
+        data = request.POST
+        existing = mongodb.database['reviews'].find_one({
+            "user_id": request.user.id,
+            "product_slug": data['product_slug']
+        }) 
+
+        if existing:
+            messages.success(request, "You have already reviewed this product.")
+        else:
+            review = ReviewManager()
+            review.create_review(request.user.id, data['product_slug'], data['rating'], data['comment'])
+            messages.success(request, "Your review has been added successfully.")
+
+        return redirect(request.META.get('HTTP_REFERER', '/')) 
+
+    except Exception as e:
+        messages.error(request, str(e))
+        return render(request, '404.html', {'detail': str(e)}, status=500)
 # not complete
 
 def json_response(data, status=200):
@@ -297,12 +309,6 @@ def json_response(data, status=200):
 
 def error_response(message, status=400):
     return JsonResponse({'error': message}, status=status)
-
-
-
-
-
-
 
 
 @csrf_exempt

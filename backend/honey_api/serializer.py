@@ -3,6 +3,8 @@ from datetime import datetime
 from pymongo.cursor import Cursor
 from mongodb_connector import mongodb
 
+from core.models import User
+
 def mongo_serializer(doc):
     if doc is None:
         return None
@@ -53,5 +55,20 @@ def cart_serializer(cart):
     cart['shipping'] = 6
     cart['tax'] = 5
     cart['total'] = cart['subtotal'] + cart['shipping'] + cart['tax']
+
+    return context
+
+def review_serializer(reviews):
+    context = []
+
+    for review in reviews:
+        username = User.objects.get(id=review['user_id'])
+        rev = {
+            'username': username,
+            'rating': review['rating'],
+            'comment': review['comment'],
+            'date': review['date'],
+        }
+        context.append(rev)
 
     return context
