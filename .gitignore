@@ -94,4 +94,3 @@ db.sqlite3
 credentials.py
 .vscode/
 delete-database.py
-staticfiles/

@@ -26,7 +26,7 @@
                     <div class="product-images">
                         <div class="main-image">
                             <img id="mainProductImage" 
-                                 src="{% if product.image %}{{ product.image }}{% else %}{% static 'images/honey-jar-placeholder.jpg' %}{% endif %}" 
+                                 src="{% if product.image %}{{ product.image }}{% else %}{% static 'images/1.png' %}{% endif %}" 
                                  alt="{{ product.title }}" 
                                  class="img-fluid rounded">
                         </div>
@@ -290,7 +290,7 @@
                             {% if related_product.image %}
                                 <img src="{{ related_product.image }}" alt="{{ related_product.title }}" loading="lazy">
                             {% else %}
-                                <img src="{% static 'images/honey-jar-placeholder.jpg' %}" alt="{{ related_product.title }}" loading="lazy">
+                                <img src="{% static 'images/1.png' %}" alt="{{ related_product.title }}" loading="lazy">
                             {% endif %}
                             <div class="product-overlay">
                                 <a href="{% url 'product_detail' related_product.slug %}" class="btn btn-honey btn-sm">

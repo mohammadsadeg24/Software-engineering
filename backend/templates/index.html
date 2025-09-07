@@ -74,7 +74,7 @@
                             </div>
                         </div>
                         <div class="product-info">
-                            <h5 class="product-title">{{ product.name }}</h5>
+                            <h5 class="product-title">{{ product.title }}</h5>
                             <p class="product-description">{{ product.description|truncatewords:15 }}</p>
                             <div class="product-price">
                                 {% if product.variants and product.variants|length > 0 %}
@@ -222,7 +222,7 @@
                 </div>
                 <div class="col-lg-6">
                     <div class="about-image">
-                        <img src="{% static 'images/2.jpeg' %}" alt="Beekeeper" class="img-fluid rounded-3 shadow">
+                        <img src="{% static 'images/2.png' %}" alt="Beekeeper" class="img-fluid rounded-3">
                     </div>
                 </div>
             </div>

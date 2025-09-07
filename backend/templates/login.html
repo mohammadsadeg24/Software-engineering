@@ -1,82 +1,56 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Login - Pure Honey Shop{% endblock %}
 
 {% block content %}
-<section class="auth-section py-5">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-4">
-                <div class="card shadow">
-                    <div class="card-body p-5">
-                        <div class="text-center mb-4">
-                            <i class="fas fa-honeycomb fa-3x text-warning mb-3"></i>
-                            <h2 class="card-title">Login</h2>
-                            <p class="text-muted">Welcome back to Pure Honey Shop</p>
-                        </div>
-                        
-                        <form method="post">
+    <section class="page-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'login' %}">Login</a></li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="login-content py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-5">
+                    <div class="login-form-wrapper p-4 p-md-5 border rounded">
+                        <h3 class="form-title text-center mb-4">Welcome Back!</h3>
+                        <p class="text-center text-muted mb-4">Enter your credentials to access your account.</p>
+
+                        <form method="POST" action="{% url 'login' %}">
                             {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
-                                {{ form.username }}
-                                {% if form.username.errors %}
-                                    <div class="text-danger">{{ form.username.errors }}</div>
-                                {% endif %}
-                            </div>
                             
                             <div class="mb-3">
-                                <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
-                                {{ form.password }}
-                                {% if form.password.errors %}
-                                    <div class="text-danger">{{ form.password.errors }}</div>
-                                {% endif %}
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" name="username" id="username" class="form-control" placeholder="Enter your username" required>
                             </div>
                             
-                            {% if form.non_field_errors %}
-                                <div class="alert alert-danger">{{ form.non_field_errors }}</div>
-                            {% endif %}
-                            
-                            <button type="submit" class="btn btn-honey w-100 mb-3">
-                                <i class="fas fa-sign-in-alt"></i> Login
+                            <div class="mb-4">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" name="password" id="password" class="form-control" placeholder="Enter your password" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-honey w-100 py-2">
+                                <i class="fas fa-sign-in-alt me-2"></i> Login
                             </button>
                         </form>
                         
-                        <div class="text-center">
-                            <p class="text-muted">Don't have an account?</p>
-                            <a href="{% url 'register' %}" class="btn btn-outline-honey">
-                                <i class="fas fa-user-plus"></i> Create Account
-                            </a>
+                        <div class="text-center mt-4">
+                            <p class="text-muted mb-0">Don't have an account? <a href="{% url 'register' %}" class="fw-bold text-decoration-none">Sign Up Now</a></p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
-
-<style>
-.auth-section {
-    background: linear-gradient(135deg, #ffc107, #ffeb3b);
-    min-height: 80vh;
-    display: flex;
-    align-items: center;
-}
-
-.auth-section .card {
-    border: none;
-    border-radius: 15px;
-}
-
-.auth-section .form-control {
-    border-radius: 10px;
-    border: 2px solid #e0e0e0;
-    padding: 12px;
-}
-
-.auth-section .form-control:focus {
-    border-color: #ffc107;
-    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
-}
-</style>
+    </section>
 {% endblock %}

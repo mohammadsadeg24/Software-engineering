@@ -112,7 +112,7 @@ def shop(request):
         products = mongodb.database['products'].find(filters, sort=[(sort_field, sort_direction)])
         categories = mongodb.database['categories'].find()
 
-        paginator = Paginator(list(mongo_serializer(products)), 2)
+        paginator = Paginator(list(mongo_serializer(products)), 4)
         products_page = paginator.get_page(page_number)
         
         context = {
@@ -146,7 +146,7 @@ def contact(request):
         return render(request, '404.html', {'detail': str(e)}, status=500)
 
 
-@login_required
+@login_required(login_url='login')
 @require_http_methods(["GET"])
 def cart_view(request):
     try:
@@ -169,7 +169,7 @@ def cart_view(request):
 
 @csrf_exempt
 @require_http_methods(["POST"])
-@login_required
+@login_required(login_url='login')
 def add_to_cart(request):
     try:
         user_cart = mongodb.database['carts'].find_one({"user_id": request.user.id})
@@ -212,7 +212,7 @@ def add_to_cart(request):
 
 @csrf_exempt
 @require_http_methods(["POST"])
-@login_required
+@login_required(login_url='login')
 def remove_from_cart(request, slug):
     try:
         user_cart = mongodb.database['carts'].find_one({'user_id': request.user.id})
@@ -236,7 +236,7 @@ def remove_from_cart(request, slug):
 
 @csrf_exempt
 @require_http_methods(["POST"])
-@login_required
+@login_required(login_url='login')
 def clear_cart(request):
     try:
         user_cart = mongodb.database['carts'].find_one({'user_id': request.user.id})
@@ -258,6 +258,7 @@ def clear_cart(request):
 
 
 @require_http_methods(["POST"])
+@login_required(login_url='login')
 def add_review(request):
     try:
         data = request.POST
@@ -281,7 +282,7 @@ def add_review(request):
 
 
 @require_http_methods(["GET"])
-@login_required
+@login_required(login_url='login')
 def checkout(request):
     try:
         user_id = request.user.id
@@ -304,7 +305,7 @@ def checkout(request):
 
 
 @require_http_methods(["GET"])
-@login_required
+@login_required(login_url='login')
 def get_orders(request):
     try:
         user_id = request.user.id
@@ -317,7 +318,7 @@ def get_orders(request):
 
 @csrf_exempt
 @require_http_methods(["POST"])
-@login_required
+@login_required(login_url='login')
 def create_order(request):
     try:
         data = request.POST

@@ -20,7 +20,7 @@ from mongodb_connector import mongodb
 def login_user(request):
     try:
         if request.method == "POST":
-            data = json.loads(request.body)
+            data = request.POST
             username = data.get('username')
             password = data.get('password')
 
@@ -33,10 +33,9 @@ def login_user(request):
                 
             else:
                 messages.success(request, "Invalid username or password. Please try again.")
-                return redirect('index')
+                return redirect('login')
         else:
-            # login page
-            return render(request, '404.html', {'detail': str(e)}, status=500)            
+            return render(request, 'login.html')
     except Exception as e:
         messages.error(request, str(e))
         return render(request, '404.html', {'detail': str(e)}, status=500)            
@@ -47,35 +46,38 @@ def login_user(request):
 def register_user(request):
     try:
         if request.method == "POST":
-            data = json.loads(request.body)
+            data = request.POST
             
+            print(data)
             if User.objects.filter(username=data.get('username')).exists() or \
             User.objects.filter(email=data.get('email')).exists():
-                messages.error("Username or email already exists.")
-                # register page
-                return redirect('index')
+                messages.error(request, "Username or email already exists.")
+                return redirect('register')
+
+            if data.get('password1') != data.get('password2'):
+                messages.error(request, "Password and Confirm Password do not match.")
+                return redirect('register')
             
             user = User.objects.create_user(
                 username=data.get('username'),
                 email=data.get('email'),
-                password=data.get('password'),
+                password=data.get('password1'),
                 first_name=data.get('first_name', ''),
                 last_name=data.get('last_name', ''),
                 phone=data.get('phone', ''),
             )
 
             messages.success(request, "Your account has been created successfully. You can now log in.")
-            # login page
-            return redirect('index')
+            return render(request, 'login.html')
         else:
-            # register page
-            return render(request, '404.html', {'detail': str(e)}, status=500)            
+            return render(request, 'register.html')
     except Exception as e:
         messages.error(request, str(e))
         return render(request, '404.html', {'detail': str(e)}, status=500)            
 
 
 @login_required
+@login_required(login_url='login')
 def logout_user(request):
     try:
         logout(request)
@@ -88,6 +90,7 @@ def logout_user(request):
 
 
 @require_http_methods(["GET"])
+@login_required(login_url='login')
 @login_required
 def profile(request):
     try:
@@ -109,7 +112,7 @@ def profile(request):
         return render(request, '404.html', {'detail': str(e)}, status=500)            
 
 
-@csrf_exempt
+@login_required(login_url='login')
 @require_http_methods(["POST"])
 @login_required
 def update_profile(request):
@@ -130,15 +133,15 @@ def update_profile(request):
         return render(request, '404.html', {'detail': str(e)}, status=500)            
 
 
-@login_required
 @require_http_methods(["POST"])
+@login_required(login_url='login')
 def change_password(request):
     try:
         data = request.POST
 
         current_password = data.get('old_password')
         new_password1 = data.get('new_password1')
-        new_password2 = data.POST.get('new_password2')
+        new_password2 = data.get('new_password2')
 
         if new_password1 != new_password2:
             messages.error(request, "New passwords do not match.")
@@ -162,7 +165,7 @@ def change_password(request):
 
 @csrf_exempt
 @require_http_methods(["POST"])
-@login_required
+@login_required(login_url='login')
 def create_address(request):
     try:
         data = request.POST
@@ -201,52 +204,14 @@ def delete_address(request, address_id):
         return render(request, '404.html', {'detail': str(e)}, status=500)        
 
 
-# not compelete
-
-def json_response(data, status=200):
-    return JsonResponse(data, status=status, safe=False)
-
-def error_response(message, status=400):
-    return JsonResponse({'error': message}, status=status)
-
-
 @csrf_exempt
 @require_http_methods(["POST"])
-@login_required
+@login_required(login_url='login')
 def update_address(request, address_id):
-    try:
-        data = json.loads(request.body)
-        
-        address = Address.objects.get(id=address_id, user=request.user)
-        
-        address.name = data.get('name', address.name)
-        address.address = data.get('address', address.address)
-        address.city = data.get('city', address.city)
-        address.state = data.get('state', address.state)
-        address.country = data.get('country', address.country)
-        address.postal_code = data.get('postal_code', address.postal_code)
-        address.is_default = data.get('is_default', address.is_default)
-        
-        address.save()
-        
-        return json_response({
-            "success": True,
-            "message": "Address updated successfully"
-        })
-    except Address.DoesNotExist:
-        return error_response("Address not found", 404)
-    except Exception as e:
-        return error_response(str(e), 500)
+    ...
 
 
 @require_http_methods(["GET"])
-@login_required
+@login_required(login_url='login')
 def get_addresses(request):
-    try:
-        user_addresses = Address.objects.filter(user=request.user).values(
-            'id', 'name', 'address', 'city', 'state', 'country', 
-            'postal_code', 'is_default', 'created_at'
-        )
-        return json_response(list(user_addresses))
-    except Exception as e:
-        return error_response(str(e), 500)
+    ...
