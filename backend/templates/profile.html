@@ -12,7 +12,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
-                            <li class="breadcrumb-item active">My Profile</li>
+                            <li class="breadcrumb-item"><a href="{% url 'profile' %}">Profile</a></li>
                         </ol>
                     </nav>
                 </div>
@@ -94,7 +94,7 @@
                                                 <i class="fas fa-shopping-bag"></i>
                                             </div>
                                             <div class="stats-info">
-                                                <h4>{{ total_orders|default:0 }}</h4>
+                                                <h4>{{ orders|length|default:0 }}</h4>
                                                 <p>Total Orders</p>
                                             </div>
                                         </div>
@@ -127,7 +127,7 @@
                                                 <i class="fas fa-dollar-sign"></i>
                                             </div>
                                             <div class="stats-info">
-                                                <h4>${{ total_spent|default:0|floatformat:2 }}</h4>
+                                                <h4>${{ total_spend|default:0|floatformat:2 }}</h4>
                                                 <p>Total Spent</p>
                                             </div>
                                         </div>
@@ -135,7 +135,7 @@
                                 </div>
                                 
                                 <!-- Recent Orders -->
-                                <div class="recent-orders">
+                                {% comment %} <div class="recent-orders">
                                     <h5>Recent Orders</h5>
                                     {% if recent_orders %}
                                     <div class="table-responsive">
@@ -169,7 +169,7 @@
                                     {% else %}
                                     <p class="text-muted">No orders yet. <a href="{% url 'shop' %}">Start shopping!</a></p>
                                     {% endif %}
-                                </div>
+                                </div> {% endcomment %}
                             </div>
                         </div>
                         
@@ -216,44 +216,32 @@
                                         <div class="order-header">
                                             <div class="order-info">
                                                 <h5>Order #{{ order.order_number }}</h5>
-                                                <p class="text-muted">Placed on {{ order.created_at|date:"F d, Y" }}</p>
+                                                <p class="text-muted">Placed on {{ order.date|date:"F j, Y, g:i a" }}</p>
                                             </div>
                                             <div class="order-status">
-                                                <span class="badge bg-{{ order.status_class }}">{{ order.get_status_display }}</span>
-                                                <div class="order-total">${{ order.total|floatformat:2 }}</div>
+                                                <span class="badge bg-{{ order.order_class }}">{{ order.order_status }}</span>
+                                                <div class="order-total">${{ order.total_amount|floatformat:2 }}</div>
                                             </div>
                                         </div>
                                         <div class="order-items">
-                                            {% for item in order.items.all %}
+                                            {% for item in order.items %}
                                             <div class="order-product">
                                                 <div class="product-image">
-                                                    {% if item.product.image %}
+                                                    {% if item.image %}
                                                         <img src="{{ item.product.image }}" alt="{{ item.product.name }}">
                                                     {% else %}
                                                         <img src="{% static 'images/honey-jar-placeholder.jpg' %}" alt="{{ item.product.name }}">
                                                     {% endif %}
                                                 </div>
                                                 <div class="product-details">
-                                                    <h6>{{ item.product.name }}</h6>
-                                                    {% if item.variant %}
-                                                    <small class="text-muted">Size: {{ item.variant.size }}</small>
-                                                    {% endif %}
-                                                    <div class="quantity">Qty: {{ item.quantity }}</div>
+                                                    <h6>{{ item.name }} * {{ item.quantity }}</h6>
                                                 </div>
                                                 <div class="product-price">
-                                                    ${{ item.price|floatformat:2 }}
+                                                    ${{ item.total_amount|floatformat:2 }}
                                                 </div>
+
                                             </div>
                                             {% endfor %}
-                                        </div>
-                                        <div class="order-actions">
-                                            <a href="{% url 'order_detail' order.id %}" class="btn btn-outline-honey btn-sm">View Details</a>
-                                            {% if order.status == 'delivered' %}
-                                            <button class="btn btn-honey btn-sm" onclick="reorderItems({{ order.id }})">Reorder</button>
-                                            {% endif %}
-                                            {% if order.can_cancel %}
-                                            <button class="btn btn-outline-danger btn-sm" onclick="cancelOrder({{ order.id }})">Cancel</button>
-                                            {% endif %}
                                         </div>
                                     </div>
                                     {% endfor %}
@@ -461,6 +449,22 @@
 
 {% block extra_js %}
 <script>
+
+    function activateTabFromHash() {
+        const hash = window.location.hash;
+        if (hash) {
+            const tabTrigger = document.querySelector(`a[href="${hash}"]`);
+            if (tabTrigger) {
+                const tab = new bootstrap.Tab(tabTrigger);
+                tab.show();
+            }
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", activateTabFromHash);
+    window.addEventListener("hashchange", activateTabFromHash);
+
+
     {% comment %} 
 
     function reorderItems(orderId) {

@@ -6,13 +6,14 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth import update_session_auth_hash
 from core.models import User, Address
 import json
-from datetime import datetime
 from django.contrib import messages
 from django.shortcuts import render, redirect
 
 from core.serializers import AddressSerializer
 from django.views.decorators.http import require_POST
 
+from honey_api.views import get_orders
+from mongodb_connector import mongodb
 
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
@@ -92,9 +93,14 @@ def profile(request):
     try:
         addresses = Address.objects.filter(user=request.user)
         addresses_list = AddressSerializer(addresses, many=True).data
+        reviews = list(mongodb.database['reviews'].find({"user_id": request.user.id}))
+        total_spend, orders = get_orders(request)
 
         context = {
-            "addresses": addresses_list
+            'addresses': addresses_list,
+            'orders': orders,
+            'total_spend': total_spend,
+            'reviews_count': len(reviews)
         }
 
         return render(request, 'profile.html', context)

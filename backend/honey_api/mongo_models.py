@@ -1,10 +1,7 @@
 from mongodb_connector import mongodb
-from django.utils.text import slugify
 from datetime import datetime
-import uuid
 
-from honey_api.utils import get_object_id, generate_unique_slug
-from honey_api.serializer import mongo_serializer
+from honey_api.utils import get_object_id, generate_unique_slug, generate_order_number
 
 class BaseMongoModel:
     def __init__(self, collection_name):
@@ -32,14 +29,13 @@ class ProductManager(BaseMongoModel):
     def __init__(self):
         super().__init__('products')
     
-    def create_product(self, title, category_id, price, description="", variants=None):
+    def create_product(self, title, category_id, price, description):
         data = {
             'title': title,
             'slug': generate_unique_slug(title),
             'category_id': get_object_id(category_id),
             'price': float(price),
             'description': description,
-            'variants': variants or [],
             'images': [],
             'status': 'active',
             'modified_at': datetime.now()
@@ -79,40 +75,19 @@ class OrderManager(BaseMongoModel):
     def __init__(self):
         super().__init__('orders')
     
-    def create_order(self, user_id, items, total_amount, address_data=None, description=""):
-        """Create a new order"""
+    def create_order(self, user_id, items, total_amount, address_id):
         data = {
             'user_id': int(user_id),
             'items': items,
             'total_amount': float(total_amount),
             'payment_status': 'pending',
             'order_status': 'processing',
-            'description': description,
-            'address': address_data,
-            'order_number': self._generate_order_number()
+            'address_id': address_id,
+            'order_number': generate_order_number(),
+            'date': datetime.now()
         }
         return self.create(data)
     
-    def _generate_order_number(self):
-        """Generate unique order number"""
-        return f"ORD-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:8].upper()}"
-
-    def get_user_orders(self, user_id, limit=20, skip=0):
-        """Get orders for a user"""
-        return self.find_all(
-            {"user_id": int(user_id)},
-            limit=limit,
-            skip=skip,
-            sort=[("created_at", -1)]
-        )
-    
-    def update_payment_status(self, order_id, status, transaction_ref=""):
-        """Update order payment status"""
-        update_data = {
-            'payment_status': status,
-            'transaction_ref': transaction_ref
-        }
-        return self.update_by_id(order_id, update_data)
 
 categories = CategoryManager()
 products = ProductManager()

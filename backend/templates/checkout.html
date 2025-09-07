@@ -14,7 +14,7 @@
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
                             <li class="breadcrumb-item"><a href="{% url 'cart' %}">Cart</a></li>
-                            <li class="breadcrumb-item active">Checkout</li>
+                            <li class="breadcrumb-item"><a href="{% url 'checkout' %}">Checkout</a></li>
                         </ol>
                     </nav>
                 </div>
@@ -45,8 +45,10 @@
     <!-- Checkout Content -->
     <section class="checkout-section">
         <div class="container">
-            <form method="POST" action="{% url 'process_checkout' %}" id="checkoutForm">
+            <form method="POST" action="{% url 'create_order' %}">
                 {% csrf_token %}
+                <input type="hidden" name="cart_id" value="{{ cart.cart_id }}">
+                <input type="hidden" name="total_amount" value="{{ cart.total }}">
                 <div class="row">
                     <!-- Checkout Form -->
                     <div class="col-lg-8">
@@ -67,14 +69,13 @@
                                            onchange="selectSavedAddress({{ address.id }})">
                                     <label for="address-{{ address.id }}" class="address-card">
                                         <div class="address-header">
-                                            <strong>{{ address.full_name }}</strong>
+                                            <strong>{{ address.name }}</strong>
                                             {% if address.is_default %}
                                             <span class="badge bg-primary">Default</span>
                                             {% endif %}
                                         </div>
                                         <div class="address-details">
-                                            {{ address.street_address }}
-                                            {% if address.apartment %}, {{ address.apartment }}{% endif %}<br>
+                                            {{ address.address }}
                                             {{ address.city }}, {{ address.state }} {{ address.postal_code }}<br>
                                             {{ address.country }}
                                             {% if address.phone %}<br><i class="fas fa-phone"></i> {{ address.phone }}{% endif %}
@@ -82,90 +83,11 @@
                                     </label>
                                 </div>
                                 {% endfor %}
-                                
-                                <div class="address-option">
-                                    <input type="radio" name="saved_address" value="new" id="new-address" 
-                                           onchange="toggleNewAddressForm()">
-                                    <label for="new-address">
-                                        <i class="fas fa-plus"></i> Add new address
-                                    </label>
-                                </div>
                             </div>
-                            
-                            <hr>
                             {% endif %}
-                            
-                            <!-- Address Form -->
-                            <div class="address-form" id="address-form" {% if user.is_authenticated and saved_addresses %}style="display: none;"{% endif %}>
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label for="first_name" class="form-label">First Name *</label>
-                                        <input type="text" name="first_name" id="first_name" class="form-control" 
-                                               value="{{ user.first_name|default:'' }}" required>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="last_name" class="form-label">Last Name *</label>
-                                        <input type="text" name="last_name" id="last_name" class="form-control" 
-                                               value="{{ user.last_name|default:'' }}" required>
-                                    </div>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label for="email" class="form-label">Email Address *</label>
-                                    <input type="email" name="email" id="email" class="form-control" 
-                                           value="{{ user.email|default:'' }}" required>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label for="phone" class="form-label">Phone Number *</label>
-                                    <input type="tel" name="phone" id="phone" class="form-control" 
-                                           value="{{ user.profile.phone_number|default:'' }}" required>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label for="street_address" class="form-label">Street Address *</label>
-                                    <input type="text" name="street_address" id="street_address" class="form-control" 
-                                           placeholder="123 Main Street" required>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label for="apartment" class="form-label">Apartment, Suite, etc.</label>
-                                    <input type="text" name="apartment" id="apartment" class="form-control" 
-                                           placeholder="Apt 4B (optional)">
-                                </div>
-                                
-                                <div class="row">
-                                    <div class="col-md-4 mb-3">
-                                        <label for="city" class="form-label">City *</label>
-                                        <input type="text" name="city" id="city" class="form-control" required>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label for="state" class="form-label">State *</label>
-                                        <select name="state" id="state" class="form-select" required>
-                                            <option value="">Select State</option>
-                                            <option value="AL">Alabama</option>
-                                            <option value="CA">California</option>
-                                            <option value="FL">Florida</option>
-                                            <option value="NY">New York</option>
-                                            <option value="TX">Texas</option>
-                                            <!-- Add more states -->
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label for="postal_code" class="form-label">ZIP Code *</label>
-                                        <input type="text" name="postal_code" id="postal_code" class="form-control" required>
-                                    </div>
-                                </div>
-                                
-                                {% if user.is_authenticated %}
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="save_address" id="save_address" checked>
-                                    <label class="form-check-label" for="save_address">
-                                        Save this address for future orders
-                                    </label>
-                                </div>
-                                {% endif %}
-                            </div>
+                            <a href="{% url 'profile' %}#addresses" class="btn btn-honey">
+                                <i class="fas fa-map-marker-alt"></i> Add Address
+                            </a>
                         </div>
                         
                         <!-- Step 2: Payment Information -->
@@ -216,7 +138,7 @@
                                     <label for="card_number" class="form-label">Card Number *</label>
                                     <div class="card-input-group">
                                         <input type="text" name="card_number" id="card_number" class="form-control" 
-                                               placeholder="1234 5678 9012 3456" maxlength="19" required>
+                                               placeholder="1234 5678 9012 3456" maxlength="19">
                                         <div class="card-type-icon" id="card-type-icon"></div>
                                     </div>
                                 </div>
@@ -225,17 +147,17 @@
                                     <div class="col-md-4 mb-3">
                                         <label for="card_expiry" class="form-label">Expiry Date *</label>
                                         <input type="text" name="card_expiry" id="card_expiry" class="form-control" 
-                                               placeholder="MM/YY" maxlength="5" required>
+                                               placeholder="MM/YY" maxlength="5">
                                     </div>
                                     <div class="col-md-4 mb-3">
                                         <label for="card_cvv" class="form-label">CVV *</label>
                                         <input type="text" name="card_cvv" id="card_cvv" class="form-control" 
-                                               placeholder="123" maxlength="4" required>
+                                               placeholder="123" maxlength="4">
                                     </div>
                                     <div class="col-md-4 mb-3">
                                         <label for="card_name" class="form-label">Name on Card *</label>
                                         <input type="text" name="card_name" id="card_name" class="form-control" 
-                                               placeholder="John Doe" required>
+                                               placeholder="John Doe">
                                     </div>
                                 </div>
                             </div>
@@ -311,9 +233,10 @@
                             <button type="button" class="btn btn-honey" id="nextBtn">
                                 Next <i class="fas fa-arrow-right"></i>
                             </button>
-                            <button type="submit" class="btn btn-success btn-lg" id="submitBtn" style="display: none;">
+                            <button type="submit" class="btn btn-honey btn-lg" id="submitBtn">
                                 <i class="fas fa-lock"></i> Place Order
                             </button>
+
                         </div>
                     </div>
                     
@@ -335,9 +258,6 @@
                                     </div>
                                     <div class="item-info">
                                         <h6>{{ item.product.name }}</h6>
-                                        {% if item.variant %}
-                                        <small>{{ item.variant.size }}</small>
-                                        {% endif %}
                                         <div class="quantity">Qty: {{ item.quantity }}</div>
                                     </div>
                                     <div class="item-total">${{ item.total_price|floatformat:2 }}</div>
@@ -360,37 +280,23 @@
                             <div class="summary-calculations">
                                 <div class="summary-line">
                                     <span>Subtotal:</span>
-                                    <span>${{ cart_subtotal|floatformat:2 }}</span>
+                                    <span>${{ cart.subtotal|floatformat:2 }}</span>
                                 </div>
-                                
-                                {% if cart_discount > 0 %}
-                                <div class="summary-line discount">
-                                    <span>Discount:</span>
-                                    <span>-${{ cart_discount|floatformat:2 }}</span>
-                                </div>
-                                {% endif %}
                                 
                                 <div class="summary-line">
                                     <span>Shipping:</span>
                                     <span id="shipping-cost">
-                                        {% if free_shipping %}
-                                            <span class="text-success">FREE</span>
-                                        {% else %}
-                                            ${{ shipping_cost|floatformat:2 }}
-                                        {% endif %}
+                                        ${{ cart.shipping|floatformat:2 }}
                                     </span>
                                 </div>
                                 
                                 <div class="summary-line">
                                     <span>Tax:</span>
-                                    <span id="tax-amount">${{ cart_tax|floatformat:2 }}</span>
+                                    <span id="tax-amount">${{ cart.tax|floatformat:2 }}</span>
                                 </div>
-                                
-                                <hr>
-                                
-                                <div class="summary-line total">
+                                <div class="summary-line">
                                     <span><strong>Total:</strong></span>
-                                    <span><strong id="final-total">${{ cart_total|floatformat:2 }}</strong></span>
+                                    <span><strong id="final-total">${{ cart.total|floatformat:2 }}</strong></span>
                                 </div>
                             </div>
                             
@@ -410,8 +316,9 @@
                 </div>
             </form>
         </div>
-    </section>
+    </section> 
 {% endblock %}
+
 
 {% block extra_js %}
 <script>
@@ -445,15 +352,14 @@
     
     // Step navigation
     document.getElementById('nextBtn').addEventListener('click', function() {
-        if (validateCurrentStep()) {
-            if (currentStep < totalSteps) {
-                currentStep++;
-                updateStepVisibility();
-                updateProgressSteps();
-                
-                if (currentStep === 3) {
-                    updateOrderReview();
-                }
+        console.log("here")
+        if (currentStep < totalSteps) {
+            currentStep++;
+            updateStepVisibility();
+            updateProgressSteps();
+            
+            if (currentStep === 3) {
+                updateOrderReview();
             }
         }
     });
@@ -676,12 +582,14 @@
     // Validation helper functions
     function isValidEmail(email) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
+        return emailRegex.test(email); 
+        return true;
     }
     
     function isValidCardNumber(cardNumber) {
         const cleanNumber = cardNumber.replace(/\s+/g, '');
         return cleanNumber.length >= 13 && cleanNumber.length <= 19 && /^\d+$/.test(cleanNumber);
+        return true;
     }
     
     function isValidExpiryDate(expiry) {
@@ -701,85 +609,5 @@
         return true;
     }
     
-    function applyPromoCode() {
-        const promoCode = document.querySelector('input[name="promo_code"]').value;
-        if (!promoCode.trim()) {
-            showToast('Please enter a promo code', 'error');
-            return;
-        }
-        
-        fetch(`{% url 'apply_coupon' %}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-            },
-            body: JSON.stringify({
-                'coupon_code': promoCode
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showToast('Promo code applied successfully!', 'success');
-                updateOrderSummary(data.cart_summary);
-            } else {
-                showToast(data.message || 'Invalid promo code', 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showToast('Error applying promo code', 'error');
-        });
-    }
-    
-    function updateOrderSummary(summary) {
-        if (summary) {
-            document.getElementById('shipping-cost').innerHTML = summary.shipping_cost > 0 ? 
-                ' + summary.shipping_cost.toFixed(2) : '<span class="text-success">FREE</span>';
-            document.getElementById('tax-amount').textContent = ' + summary.tax.toFixed(2);
-            document.getElementById('final-total').textContent = ' + summary.total.toFixed(2);
-        }
-    }
-    
-    // Form submission
-    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        if (!validateCurrentStep()) {
-            return;
-        }
-        
-        // Show loading state
-        const submitBtn = document.getElementById('submitBtn');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-        submitBtn.disabled = true;
-        
-        // Submit form
-        fetch(this.action, {
-            method: 'POST',
-            body: new FormData(this),
-            headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                window.location.href = data.redirect_url || '{% url "order_success" %}';
-            } else {
-                showToast(data.message || 'Error processing order', 'error');
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showToast('Error processing order', 'error');
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        });
-    });
 </script>
 {% endblock %}

@@ -4,6 +4,7 @@ from pymongo.cursor import Cursor
 from mongodb_connector import mongodb
 
 from core.models import User
+from honey_api.utils import get_object_id
 
 def mongo_serializer(doc):
     if doc is None:
@@ -23,7 +24,7 @@ def mongo_serializer(doc):
             elif isinstance(value, ObjectId):
                 serialized[key] = str(value)
             elif isinstance(value, datetime):
-                serialized[key] = value.isoformat()
+                serialized[key] = value
             elif isinstance(value, dict):
                 serialized[key] = mongo_serializer(value)
             elif isinstance(value, list):
@@ -52,10 +53,10 @@ def cart_serializer(cart):
         items.append(item_data)
     
     cart['items'] = items
+    cart['cart_id'] = cart['_id']
     cart['shipping'] = 6
     cart['tax'] = 5
     cart['total'] = cart['subtotal'] + cart['shipping'] + cart['tax']
-
     return context
 
 def review_serializer(reviews):
@@ -72,3 +73,37 @@ def review_serializer(reviews):
         context.append(rev)
 
     return context
+
+def product_serializer(product):
+    context = mongo_serializer(product)
+
+    category_id = get_object_id(product['category_id'])
+    category = mongodb.database['categories'].find_one({'_id':category_id})
+    
+    context['category_slug'] = category['slug']
+    context['category_name'] = category['name']
+
+    return context
+
+def order_serializer(orders):
+    orders = mongo_serializer(orders)
+    total_spend = 0
+
+    for order_index in range(len(orders)):
+        order_data = []
+           
+        total_spend += orders[order_index]['total_amount']
+
+        for item in orders[order_index]['items']:
+            product = mongodb.database['products'].find_one({'slug': item['product_slug']})
+            data = {
+                'name': product['title'],
+                'quantity': item['quantity'],
+                'price': product['price'],
+                'total_amount': product['price'] * item['quantity'],
+            }
+            order_data.append(data)
+
+        orders[order_index]['items'] = order_data
+
+    return total_spend, orders

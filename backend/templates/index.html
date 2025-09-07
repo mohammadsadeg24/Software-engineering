@@ -96,27 +96,22 @@
                                         <i class="fas fa-tag"></i> {{ product.category }}
                                     </small>
                                 {% endif %}
-                                {% if product.rating %}
-                                    <div class="product-rating">
-                                        {% for i in "12345" %}
-                                            {% if forloop.counter <= product.rating %}
-                                                <i class="fas fa-star text-warning"></i>
-                                            {% else %}
-                                                <i class="far fa-star text-muted"></i>
-                                            {% endif %}
-                                        {% endfor %}
-                                        <small class="text-muted">({{ product.rating }})</small>
-                                    </div>
-                                {% endif %}
                             </div>
-                            <button class="btn btn-honey btn-sm add-to-cart" 
-                                    data-product-id="{{ product.slug }}" 
-                                    data-price="{% if product.sale_price and product.sale_price < product.price %}{{ product.sale_price }}{% else %}{{ product.price }}{% endif %}"
-                                    data-name="{{ product.name }}"
-                                    {% if not product.in_stock %}disabled{% endif %}>
-                                <i class="fas fa-cart-plus"></i> 
-                                {% if product.in_stock %}Add to Cart{% else %}Out of Stock{% endif %}
-                            </button>
+                            <form class="add-to-cart-form" method="POST" action="{% url 'add_to_cart' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="product_slug" value="{{ product.slug }}">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="quantity-controls">
+                                        <button type="button" class="qty-btn" onclick="decreaseQuantity(this)">-</button>
+                                        <input type="number" name="quantity" value="1" min="1" max="{{ product.stock|default:999 }}" class="qty-input">
+                                        <button type="button" class="qty-btn" onclick="increaseQuantity(this)">+</button>
+                                    </div>
+                                    <button type="submit" class="btn btn-honey btn-sm flex-grow-1">
+                                        <i class="fas fa-cart-plus"></i> 
+                                        Add to Cart
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -303,4 +298,65 @@
             </div>
         </div>
     </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function applySorting() {
+        const sortValue = document.getElementById('sortSelect').value;
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        if (sortValue) {
+            urlParams.set('sort', sortValue);
+        } else {
+            urlParams.delete('sort');
+        }
+        
+        window.location.search = urlParams.toString();
+    }
+    
+    function selectVariant(button, size, price) {
+        // Remove active class from other buttons
+        button.parentNode.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('active'));
+        // Add active class to clicked button
+        button.classList.add('active');
+        
+        // Update price display
+        const priceElement = button.closest('.product-card').querySelector('.variant-price');
+        if (priceElement) {
+            priceElement.textContent = '$' + parseFloat(price).toFixed(2);
+        }
+        
+        // Update hidden variant_id field
+        const variantIdField = button.closest('.product-card').querySelector('.variant-id');
+        if (variantIdField) {
+            variantIdField.value = button.dataset.variantId;
+        }
+    }
+    
+    function increaseQuantity(button) {
+        const input = button.previousElementSibling;
+        const max = parseInt(input.getAttribute('max')) || 999;
+        if (parseInt(input.value) < max) {
+            input.value = parseInt(input.value) + 1;
+        }
+    }
+    
+    function decreaseQuantity(button) {
+        const input = button.nextElementSibling;
+        if (parseInt(input.value) > 1) {
+            input.value = parseInt(input.value) - 1;
+        }
+    }
+
+    // Add loading state for add to cart
+    document.querySelectorAll('.add-to-cart-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const button = this.querySelector('button[type="submit"]');
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+            button.disabled = true;
+        });
+    });
+
+</script>
 {% endblock %}

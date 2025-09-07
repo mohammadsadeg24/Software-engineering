@@ -1,6 +1,8 @@
 from mongodb_connector import mongodb
 from bson import ObjectId
+from datetime import datetime
 from django.utils.text import slugify
+import uuid
 
 def get_object_id(id_string):
     try:
@@ -18,6 +20,9 @@ def generate_unique_slug(collection, title):
         counter += 1
     
     return slug
+
+def generate_order_number():
+    return f"ORD-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:8].upper()}"
 
 def cart_total_amount(cart):
     total_amount = 0

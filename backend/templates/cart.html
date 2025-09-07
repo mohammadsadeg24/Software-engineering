@@ -61,12 +61,7 @@
                             
                             <div class="item-quantity">
                                 <label class="form-label">Quantity:</label>
-                                <div class="quantity-controls">
-                                    <button type="button" class="qty-btn" onclick="decreaseQuantity({{ item.id }})">-</button>
-                                    <input type="number" class="qty-input" value="{{ item.quantity }}" min="1" max="99" 
-                                           onchange="updateQuantity({{ item.id }}, this.value)">
-                                    <button type="button" class="qty-btn" onclick="increaseQuantity({{ item.id }})">+</button>
-                                </div>
+                                <div class="total-price">{{ item.quantity }}</div>
                             </div>
                             
                             <div class="item-total">
@@ -110,11 +105,7 @@
                         <div class="summary-line">
                             <span>Shipping:</span>
                             <span class="shipping-cost">
-                                {% if free_shipping %}
-                                    <span class="text-success">FREE</span>
-                                {% else %}
-                                    ${{ cart.shipping|floatformat:2 }}
-                                {% endif %}
+                                ${{ cart.shipping|floatformat:2 }}
                             </span>
                         </div>
                         
