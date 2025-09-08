@@ -6,7 +6,7 @@ This project is a **honey shop web application** built with a **hybrid database 
 
 ## 🏗️ Architecture Diagram
 
-![Database Diagram](diagram.png)
+![database diagram](diagram.png)
 
 > The diagram shows how **SQLite** and **MongoDB** work together.
 
