@@ -18,7 +18,7 @@ class CategoryManager(BaseMongoModel):
     def create_category(self, name, description="", parent_id=None):
         data = {
             'name': name,
-            'slug': generate_unique_slug(name),
+            'slug': generate_unique_slug(self.collection_name, name),
             'description': description,
             'parent_id': get_object_id(parent_id) if parent_id else None
         }
@@ -32,7 +32,7 @@ class ProductManager(BaseMongoModel):
     def create_product(self, title, category_id, price, description):
         data = {
             'title': title,
-            'slug': generate_unique_slug(title),
+            'slug': generate_unique_slug(self.collection_name, title),
             'category_id': get_object_id(category_id),
             'price': float(price),
             'description': description,

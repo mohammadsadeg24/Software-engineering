@@ -1,180 +1,110 @@
-#!/usr/bin/env python3
-from pymongo import MongoClient
+import os
+import django
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "honey_site.settings")  
+django.setup()
+
+from honey_api.mongo_models import CategoryManager, ProductManager, ReviewManager, CartManager, OrderManager
 from datetime import datetime
-from bson import ObjectId
 
-# Connect to MongoDB
-client = MongoClient('mongodb://localhost:27017/')
-db = client['honey_site']
+# Constants
+USER_ID = 1
+ADDRESS_ID = 14
 
+# Initialize managers
+categories = CategoryManager()
+products = ProductManager()
+reviews = ReviewManager()
+carts = CartManager()
+orders = OrderManager()
 
-# Clear existing data to avoid duplicates
-db.categories.delete_many({})
-db.products.delete_many({})
-db.reviews.delete_many({})
-db.carts.delete_many({})
-db.orders.delete_many({})
-print("Cleared existing data")
+# Clear collections
+categories.collection.delete_many({})
+products.collection.delete_many({})
+reviews.collection.delete_many({})
+carts.collection.delete_many({})
+orders.collection.delete_many({})
 
-# Insert categories
-categories = [
-    {"name": "Raw Honey", "slug": "raw-honey"},
-    {"name": "Flavored Honey", "slug": "flavored-honey"},
+now = datetime.now()
+
+# --- Categories ---
+categories_list = [
+    {"name": "Raw Honey"},
+    {"name": "Flavored Honey"},
+    {"name": "Organic Honey"},
+    {"name": "Honey Comb"},
 ]
 
-category_result = db.categories.insert_many(categories)
-print(f"Inserted categories: {category_result.inserted_ids}")
+category_ids = {}
+for cat in categories_list:
+    categories.create_category(cat["name"])  # create category
+    # fetch the category from DB by name to get its ID
+    cat_doc = categories.collection.find_one({"name": cat["name"]})
+    category_ids[cat["name"]] = str(cat_doc["_id"])
 
-# Get category IDs
-raw_honey_id = category_result.inserted_ids[0]
-flavored_honey_id = category_result.inserted_ids[1]
 
-# Insert products
-now = datetime.utcnow()
-products = [
+# --- Products ---
+product_list = [
+    {"title": "Wildflower Raw Honey", "category": "Raw Honey", "price": 12.99, "description": "Pure wildflower honey harvested from local farms"},
+    {"title": "Clover Raw Honey", "category": "Raw Honey", "price": 10.99, "description": "Smooth and mild clover honey"},
+    {"title": "Manuka Honey", "category": "Raw Honey", "price": 29.99, "description": "Premium Manuka honey from New Zealand"},
+    {"title": "Cinnamon Infused Honey", "category": "Flavored Honey", "price": 15.99, "description": "Raw honey infused with Ceylon cinnamon"},
+    {"title": "Lavender Honey", "category": "Flavored Honey", "price": 16.99, "description": "Delicate honey with natural lavender essence"},
+    {"title": "Ginger Infused Honey", "category": "Flavored Honey", "price": 14.99, "description": "Honey with natural ginger flavor"},
+    {"title": "Organic Forest Honey", "category": "Organic Honey", "price": 18.99, "description": "100% certified organic forest honey"},
+    {"title": "Acacia Honey", "category": "Organic Honey", "price": 19.99, "description": "Light and sweet organic acacia honey"},
+    {"title": "Honey Comb Piece", "category": "Honey Comb", "price": 25.99, "description": "Natural honey comb, fresh and unprocessed"},
+    {"title": "Mini Honey Comb", "category": "Honey Comb", "price": 9.99, "description": "Small portion of honey comb for tasting"},
+]
+
+for p in product_list:
+    cat_id = category_ids[p["category"]]
+    products.create_product(p["title"], cat_id, p["price"], p["description"])
+
+# --- Reviews ---
+reviews_data = [
+    {"slug": "wildflower-raw-honey", "rating": 5, "comment": "Absolutely delicious! Best honey I've ever tasted."},
+    {"slug": "wildflower-raw-honey", "rating": 4, "comment": "Great quality honey, fast delivery."},
+    {"slug": "manuka-honey", "rating": 5, "comment": "Premium taste, worth the price."},
+    {"slug": "cinnamon-infused-honey", "rating": 5, "comment": "The cinnamon flavor is perfect, not too strong."},
+    {"slug": "lavender-honey", "rating": 4, "comment": "Nice lavender aroma, very smooth."},
+    {"slug": "organic-forest-honey", "rating": 5, "comment": "Organic taste is amazing!"},
+    {"slug": "acacia-honey", "rating": 5, "comment": "Light and sweet, perfect for tea."},
+    {"slug": "honey-comb-piece", "rating": 5, "comment": "Fresh and natural, loved it!"},
+]
+
+for r in reviews_data:
+    reviews.create_review(USER_ID, r["slug"], r["rating"], r["comment"])
+
+# --- Cart ---
+carts.create_cart(USER_ID)
+
+# --- Orders ---
+order_list = [
     {
-        "title": "Wildflower Raw Honey",
-        "slug": "wildflower-raw-honey",
-        "category_id": raw_honey_id,
-        "price": 12.99,
-        "description": "Pure wildflower honey harvested from local farms",
-        "status": "active",
-        "created_at": now,
-        "updated_at": now
+        "items": [
+            {"product_slug": "clover-raw-honey", "quantity": 2, "price": 10.99},
+            {"product_slug": "cinnamon-infused-honey", "quantity": 1, "price": 15.99},
+        ],
+        "total_amount": 37.97
     },
     {
-        "title": "Clover Raw Honey",
-        "slug": "clover-raw-honey",
-        "category_id": raw_honey_id,
-        "price": 10.99,
-        "description": "Smooth and mild clover honey",
-        "status": "active",
-        "created_at": now,
-        "updated_at": now
+        "items": [
+            {"product_slug": "organic-forest-honey", "quantity": 1, "price": 18.99},
+            {"product_slug": "acacia-honey", "quantity": 1, "price": 19.99},
+        ],
+        "total_amount": 38.98
     },
     {
-        "title": "Cinnamon Infused Honey",
-        "slug": "cinnamon-infused-honey",
-        "category_id": flavored_honey_id,
-        "price": 15.99,
-        "description": "Raw honey infused with Ceylon cinnamon",
-        "status": "active",
-        "created_at": now,
-        "updated_at": now
-    },
-    {
-        "title": "Lavender Honey",
-        "slug": "lavender-honey",
-        "category_id": flavored_honey_id,
-        "price": 16.99,
-        "description": "Delicate honey with natural lavender essence",
-        "status": "active",
-        "created_at": now,
-        "updated_at": now
+        "items": [
+            {"product_slug": "honey-comb-piece", "quantity": 1, "price": 25.99},
+            {"product_slug": "mini-honey-comb", "quantity": 3, "price": 9.99},
+        ],
+        "total_amount": 55.96
     }
 ]
 
-product_result = db.products.insert_many(products)
-print(f"Inserted products: {product_result.inserted_ids}")
+for o in order_list:
+    orders.create_order(USER_ID, o["items"], o["total_amount"], ADDRESS_ID)
 
-# Insert reviews
-reviews = [
-    {
-        "user_id": ObjectId(),
-        "product_id": product_result.inserted_ids[0],  # Wildflower Raw Honey
-        "rating": 5,
-        "comment": "Absolutely delicious! Best honey I've ever tasted.",
-        "date": now,
-        "created_at": now,
-        "updated_at": now
-    },
-    {
-        "user_id": ObjectId(),
-        "product_id": product_result.inserted_ids[0],  # Wildflower Raw Honey
-        "rating": 4,
-        "comment": "Great quality honey, fast delivery.",
-        "date": now,
-        "created_at": now,
-        "updated_at": now
-    },
-    {
-        "user_id": ObjectId(),
-        "product_id": product_result.inserted_ids[2],  # Cinnamon Infused Honey
-        "rating": 5,
-        "comment": "The cinnamon flavor is perfect, not too strong.",
-        "date": now,
-        "created_at": now,
-        "updated_at": now
-    }
-]
-
-review_result = db.reviews.insert_many(reviews)
-print(f"Inserted reviews: {review_result.inserted_ids}")
-
-# Insert cart
-user_id_1 = ObjectId()
-
-cart_items = [
-    {
-        "product_id": product_result.inserted_ids[0],  # Wildflower Raw Honey
-        "variant_id": None,
-        "quantity": 2,
-        "added_at": now
-    },
-    {
-        "product_id": product_result.inserted_ids[3],  # Lavender Honey
-        "variant_id": None,
-        "quantity": 1,
-        "added_at": now
-    }
-]
-
-cart = {
-    "user_id": user_id_1,
-    "items": cart_items,
-    "total_amount": 42.97,  # (12.99 * 2) + 16.99
-    "created_at": now,
-    "updated_at": now
-}
-
-cart_result = db.carts.insert_one(cart)
-print(f"Inserted cart: {cart_result.inserted_id}")
-
-# Insert order
-order_items = [
-    {
-        "product_id": product_result.inserted_ids[1],  # Clover Raw Honey
-        "quantity": 3,
-        "price": 10.99
-    },
-    {
-        "product_id": product_result.inserted_ids[2],  # Cinnamon Infused Honey
-        "quantity": 1,
-        "price": 15.99
-    }
-]
-
-order = {
-    "user_id": user_id_1,
-    "items": order_items,
-    "total_amount": 48.96,  # (10.99 * 3) + 15.99
-    "payment_status": "paid",
-    "order_status": "shipped",
-    "description": "Honey variety pack order",
-    "address": {
-        "street": "123 Main Street",
-        "city": "Springfield",
-        "state": "IL",
-        "zip_code": "62701"
-    },
-    "order_number": "ORD-2024-001",
-    "transaction_ref": "TXN-ABC123456",
-    "created_at": now,
-    "updated_at": now
-}
-
-order_result = db.orders.insert_one(order)
-print(f"Inserted order: {order_result.inserted_id}")
-
-client.close()
 print("Seed data inserted successfully!")

@@ -17,14 +17,13 @@ from core.serializers import AddressSerializer
 @require_http_methods(["GET"])
 def index(request):
     try:
-        products = mongodb.database['products'].find().limit(4)
+        products = mongodb.database['products'].find().limit(3)
         categories = mongodb.database['categories'].find()
 
         context = {
             'featured_products': mongo_serializer(products),
             'categories': mongo_serializer(categories)
         }
-
         return render(request, 'index.html', context)
 
     except Exception as e:
