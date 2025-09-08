@@ -35,45 +35,45 @@ db.products.insertMany([
 
 // -------------------- REVIEWS --------------------
 db.reviews.insertMany([
-  { user_id: ObjectId("68ba849287ade2b14553421c"), product_slug: "wildflower-raw-honey", rating: 5, comment: "Absolutely delicious! Best honey I've ever tasted.", date: new ISODate("2025-09-05T06:34:58Z") },
-  { user_id: ObjectId("68ba849287ade2b14553421d"), product_slug: "wildflower-raw-honey", rating: 4, comment: "Great quality honey, fast delivery.", date: new ISODate("2025-09-05T06:34:58Z") },
-  { user_id: ObjectId("68ba849287ade2b14553421e"), product_slug: "cinnamon-infused-honey", rating: 5, comment: "The cinnamon flavor is perfect, not too strong.", date: new ISODate("2025-09-05T06:34:58Z") },
-  { user_id: ObjectId("68ba849287ade2b14553422c"), product_slug: "buckwheat-honey", rating: 5, comment: "The flavor is strong and delicious!", date: new ISODate("2025-09-11T12:00:00Z") },
-  { user_id: ObjectId("68ba849287ade2b14553422d"), product_slug: "clover-honey", rating: 4, comment: "Classic honey taste, can be used in anything.", date: new ISODate("2025-09-12T14:30:00Z") },
-  { user_id: ObjectId("68ba849287ade2b145534238"), product_slug: "black-forest-honey", rating: 5, comment: "Rich and dark, perfect for toast.", date: new ISODate("2025-09-13T09:15:00Z") },
-  { user_id: ObjectId("68ba849287ade2b145534239"), product_slug: "basswood-honey", rating: 4, comment: "Minty and refreshing, great in tea.", date: new ISODate("2025-09-13T09:20:00Z") },
-  { user_id: ObjectId("68ba849287ade2b14553423a"), product_slug: "sage-honey", rating: 5, comment: "Authentic and delicious, love the tangy flavor.", date: new ISODate("2025-09-14T11:45:00Z") },
-  { user_id: ObjectId("68ba849287ade2b14553423b"), product_slug: "sourwood-honey", rating: 4, comment: "Buttery and smooth, perfect for baking.", date: new ISODate("2025-09-15T10:00:00Z") },
-  { user_id: ObjectId("68ba849287ade2b14553423c"), product_slug: "manuka-honey", rating: 5, comment: "Subtle and sweet, great for a light drizzle.", date: new ISODate("2025-09-15T10:05:00Z") }
+  { user_id: 1, product_slug: "wildflower-raw-honey", rating: 5, comment: "Absolutely delicious! Best honey I've ever tasted.", date: new ISODate("2025-09-05T06:34:58Z") },
+  { user_id: 4, product_slug: "wildflower-raw-honey", rating: 4, comment: "Great quality honey, fast delivery.", date: new ISODate("2025-09-05T06:34:58Z") },
+  { user_id: 5, product_slug: "cinnamon-infused-honey", rating: 5, comment: "The cinnamon flavor is perfect, not too strong.", date: new ISODate("2025-09-05T06:34:58Z") },
+  { user_id: 1, product_slug: "buckwheat-honey", rating: 5, comment: "The flavor is strong and delicious!", date: new ISODate("2025-09-11T12:00:00Z") },
+  { user_id: 4, product_slug: "clover-honey", rating: 4, comment: "Classic honey taste, can be used in anything.", date: new ISODate("2025-09-12T14:30:00Z") },
+  { user_id: 5, product_slug: "black-forest-honey", rating: 5, comment: "Rich and dark, perfect for toast.", date: new ISODate("2025-09-13T09:15:00Z") },
+  { user_id: 1, product_slug: "basswood-honey", rating: 4, comment: "Minty and refreshing, great in tea.", date: new ISODate("2025-09-13T09:20:00Z") },
+  { user_id: 4, product_slug: "sage-honey", rating: 5, comment: "Authentic and delicious, love the tangy flavor.", date: new ISODate("2025-09-14T11:45:00Z") },
+  { user_id: 5, product_slug: "sourwood-honey", rating: 4, comment: "Buttery and smooth, perfect for baking.", date: new ISODate("2025-09-15T10:00:00Z") },
+  { user_id: 1, product_slug: "manuka-honey", rating: 5, comment: "Subtle and sweet, great for a light drizzle.", date: new ISODate("2025-09-15T10:05:00Z") }
 ]);
 
 // -------------------- CARTS --------------------
 db.carts.insertMany([
-  { user_id: ObjectId("68ba849287ade2b145534222"), items: [{ product_id: ObjectId("68ba849287ade2b145534218"), variant_id: null, quantity: 2 }, { product_id: ObjectId("68ba849287ade2b14553421b"), variant_id: null, quantity: 1 }], total_amount: 42.97 },
-  { user_id: ObjectId("68ba849287ade2b14553422a"), items: [{ product_id: ObjectId("68ba849287ade2b14553421e"), variant_id: null, quantity: 1 }], total_amount: 19.99 },
-  { user_id: ObjectId("68ba849287ade2b14553422b"), items: [{ product_id: ObjectId("68ba849287ade2b14553421f"), variant_id: null, quantity: 3 }], total_amount: 50.97 },
-  { user_id: ObjectId("68ba849287ade2b14553422e"), items: [{ product_id: ObjectId("68ba849287ade2b145534220"), variant_id: null, quantity: 1 }, { product_id: ObjectId("68ba849287ade2b145534221"), variant_id: null, quantity: 2 }], total_amount: 32.97 },
-  { user_id: ObjectId("68ba849287ade2b14553422f"), items: [{ product_id: ObjectId("68ba849287ade2b145534222"), variant_id: null, quantity: 3 }], total_amount: 59.97 },
-  { user_id: ObjectId("68ba849287ade2b145534230"), items: [{ product_id: ObjectId("68ba849287ade2b145534223"), variant_id: null, quantity: 1 }, { product_id: ObjectId("68ba849287ade2b145534224"), variant_id: null, quantity: 1 }], total_amount: 28.98 },
-  { user_id: ObjectId("68ba849287ade2b145534231"), items: [{ product_id: ObjectId("68ba849287ade2b145534225"), variant_id: null, quantity: 2 }], total_amount: 35.98 },
-  { user_id: ObjectId("68ba849287ade2b145534232"), items: [{ product_id: ObjectId("68ba849287ade2b145534226"), variant_id: null, quantity: 1 }, { product_id: ObjectId("68ba849287ade2b145534227"), variant_id: null, quantity: 1 }], total_amount: 36.98 },
-  { user_id: ObjectId("68ba849287ade2b145534233"), items: [{ product_id: ObjectId("68ba849287ade2b145534228"), variant_id: null, quantity: 1 }], total_amount: 21.99 },
-  { user_id: ObjectId("68ba849287ade2b145534234"), items: [{ product_id: ObjectId("68ba849287ade2b145534229"), variant_id: null, quantity: 4 }], total_amount: 47.96 },
-  { user_id: ObjectId("68ba849287ade2b145534235"), items: [{ product_id: ObjectId("68ba849287ade2b14553422a"), variant_id: null, quantity: 1 }], total_amount: 15.99 },
-  { user_id: ObjectId("68ba849287ade2b145534236"), items: [{ product_id: ObjectId("68ba849287ade2b14553422b"), variant_id: null, quantity: 2 }], total_amount: 39.98 },
-  { user_id: ObjectId("68ba849287ade2b145534237"), items: [{ product_id: ObjectId("68ba849287ade2b14553422c"), variant_id: null, quantity: 1 }, { product_id: ObjectId("68ba849287ade2b14553422d"), variant_id: null, quantity: 1 }], total_amount: 27.98 }
+  { user_id: 4, items: [{ product_id: ObjectId("68ba849287ade2b145534218"), variant_id: null, quantity: 2 }, { product_id: ObjectId("68ba849287ade2b14553421b"), variant_id: null, quantity: 1 }], total_amount: 42.97 },
+  { user_id: 1, items: [{ product_id: ObjectId("68ba849287ade2b14553421e"), variant_id: null, quantity: 1 }], total_amount: 19.99 },
+  { user_id: 5, items: [{ product_id: ObjectId("68ba849287ade2b14553421f"), variant_id: null, quantity: 3 }], total_amount: 50.97 },
+  { user_id: 4, items: [{ product_id: ObjectId("68ba849287ade2b145534220"), variant_id: null, quantity: 1 }, { product_id: ObjectId("68ba849287ade2b145534221"), variant_id: null, quantity: 2 }], total_amount: 32.97 },
+  { user_id: 1, items: [{ product_id: ObjectId("68ba849287ade2b145534222"), variant_id: null, quantity: 3 }], total_amount: 59.97 },
+  { user_id: 5, items: [{ product_id: ObjectId("68ba849287ade2b145534223"), variant_id: null, quantity: 1 }, { product_id: ObjectId("68ba849287ade2b145534224"), variant_id: null, quantity: 1 }], total_amount: 28.98 },
+  { user_id: 4, items: [{ product_id: ObjectId("68ba849287ade2b145534225"), variant_id: null, quantity: 2 }], total_amount: 35.98 },
+  { user_id: 1, items: [{ product_id: ObjectId("68ba849287ade2b145534226"), variant_id: null, quantity: 1 }, { product_id: ObjectId("68ba849287ade2b145534227"), variant_id: null, quantity: 1 }], total_amount: 36.98 },
+  { user_id: 5, items: [{ product_id: ObjectId("68ba849287ade2b145534228"), variant_id: null, quantity: 1 }], total_amount: 21.99 },
+  { user_id: 4, items: [{ product_id: ObjectId("68ba849287ade2b145534229"), variant_id: null, quantity: 4 }], total_amount: 47.96 },
+  { user_id: 1, items: [{ product_id: ObjectId("68ba849287ade2b14553422a"), variant_id: null, quantity: 1 }], total_amount: 15.99 },
+  { user_id: 5, items: [{ product_id: ObjectId("68ba849287ade2b14553422b"), variant_id: null, quantity: 2 }], total_amount: 39.98 },
+  { user_id: 4, items: [{ product_id: ObjectId("68ba849287ade2b14553422c"), variant_id: null, quantity: 1 }, { product_id: ObjectId("68ba849287ade2b14553422d"), variant_id: null, quantity: 1 }], total_amount: 27.98 }
 ]);
 
 // -------------------- ORDERS --------------------
 db.orders.insertMany([
-  { user_id: ObjectId("68ba849287ade2b145534222"), items: [{ product_id: ObjectId("68ba849287ade2b145534219"), quantity: 3 }, { product_id: ObjectId("68ba849287ade2b14553421a"), quantity: 1 }], total_amount: 48.96, payment_status: "paid", order_status: "shipped", address_id: ObjectId("68ba849287ade2b145534301"), order_number: "ORD-2024-001", date: new ISODate("2025-09-05T06:34:58Z") },
-  { user_id: ObjectId("68ba849287ade2b14553422a"), items: [{ product_id: ObjectId("68ba849287ade2b14553421e"), quantity: 1 }], total_amount: 19.99, payment_status: "paid", order_status: "processing", address_id: ObjectId("68ba849287ade2b145534302"), order_number: "ORD-2025-005", date: new ISODate("2025-09-11T12:00:00Z") },
-  { user_id: ObjectId("68ba849287ade2b14553422b"), items: [{ product_id: ObjectId("68ba849287ade2b14553421f"), quantity: 3 }], total_amount: 50.97, payment_status: "paid", order_status: "shipped", address_id: ObjectId("68ba849287ade2b145534303"), order_number: "ORD-2025-006", date: new ISODate("2025-09-12T14:30:00Z") },
-  { user_id: ObjectId("68ba849287ade2b14553422e"), items: [{ product_id: ObjectId("68ba849287ade2b145534220"), quantity: 1 }, { product_id: ObjectId("68ba849287ade2b145534221"), quantity: 2 }], total_amount: 32.97, payment_status: "paid", order_status: "shipped", address_id: ObjectId("68ba849287ade2b145534304"), order_number: "ORD-2025-007", date: new ISODate("2025-09-13T09:15:00Z") },
-  { user_id: ObjectId("68ba849287ade2b14553422f"), items: [{ product_id: ObjectId("68ba849287ade2b145534222"), quantity: 3 }], total_amount: 59.97, payment_status: "paid", order_status: "delivered", address_id: ObjectId("68ba849287ade2b145534305"), order_number: "ORD-2025-008", date: new ISODate("2025-09-14T11:45:00Z") },
-  { user_id: ObjectId("68ba849287ade2b145534230"), items: [{ product_id: ObjectId("68ba849287ade2b145534223"), quantity: 1 }, { product_id: ObjectId("68ba849287ade2b145534224"), quantity: 1 }], total_amount: 28.98, payment_status: "paid", order_status: "processing", address_id: ObjectId("68ba849287ade2b145534306"), order_number: "ORD-2025-009", date: new ISODate("2025-09-15T10:00:00Z") },
-  { user_id: ObjectId("68ba849287ade2b145534231"), items: [{ product_id: ObjectId("68ba849287ade2b145534225"), quantity: 2 }], total_amount: 35.98, payment_status: "pending", order_status: "processing", address_id: ObjectId("68ba849287ade2b145534307"), order_number: "ORD-2025-010", date: new ISODate("2025-09-16T13:30:00Z") },
-  { user_id: ObjectId("68ba849287ade2b145534232"), items: [{ product_id: ObjectId("68ba849287ade2b145534226"), quantity: 1 }, { product_id: ObjectId("68ba849287ade2b145534227"), quantity: 1 }], total_amount: 36.98, payment_status: "paid", order_status: "processing", address_id: ObjectId("68ba849287ade2b145534308"), order_number: "ORD-2025-011", date: new ISODate("2025-09-17T08:00:00Z") },
-  { user_id: ObjectId("68ba849287ade2b145534233"), items: [{ product_id: ObjectId("68ba849287ade2b145534228"), quantity: 1 }], total_amount: 21.99, payment_status: "paid", order_status: "delivered", address_id: ObjectId("68ba849287ade2b145534309"), order_number: "ORD-2025-012", date: new ISODate("2025-09-17T08:00:00Z") },
-  { user_id: ObjectId("68ba849287ade2b145534234"), items: [{ product_id: ObjectId("68ba849287ade2b145534229"), quantity: 4 }], total_amount: 47.96, payment_status: "paid", order_status: "shipped", address_id: ObjectId("68ba849287ade2b145534310"), order_number: "ORD-2025-013", date: new ISODate("2025-09-18T15:00:00Z") }
+  { user_id: 4, items: [{ product_id: ObjectId("68ba849287ade2b145534219"), quantity: 3 }, { product_id: ObjectId("68ba849287ade2b14553421a"), quantity: 1 }], total_amount: 48.96, payment_status: "paid", order_status: "shipped", address_id: ObjectId("68ba849287ade2b145534301"), order_number: "ORD-2024-001", date: new ISODate("2025-09-05T06:34:58Z") },
+  { user_id: 1, items: [{ product_id: ObjectId("68ba849287ade2b14553421e"), quantity: 1 }], total_amount: 19.99, payment_status: "paid", order_status: "processing", address_id: ObjectId("68ba849287ade2b145534302"), order_number: "ORD-2025-005", date: new ISODate("2025-09-11T12:00:00Z") },
+  { user_id: 5, items: [{ product_id: ObjectId("68ba849287ade2b14553421f"), quantity: 3 }], total_amount: 50.97, payment_status: "paid", order_status: "shipped", address_id: ObjectId("68ba849287ade2b145534303"), order_number: "ORD-2025-006", date: new ISODate("2025-09-12T14:30:00Z") },
+  { user_id: 4, items: [{ product_id: ObjectId("68ba849287ade2b145534220"), quantity: 1 }, { product_id: ObjectId("68ba849287ade2b145534221"), quantity: 2 }], total_amount: 32.97, payment_status: "paid", order_status: "shipped", address_id: ObjectId("68ba849287ade2b145534304"), order_number: "ORD-2025-007", date: new ISODate("2025-09-13T09:15:00Z") },
+  { user_id: 1, items: [{ product_id: ObjectId("68ba849287ade2b145534222"), quantity: 3 }], total_amount: 59.97, payment_status: "paid", order_status: "delivered", address_id: ObjectId("68ba849287ade2b145534305"), order_number: "ORD-2025-008", date: new ISODate("2025-09-14T11:45:00Z") },
+  { user_id: 5, items: [{ product_id: ObjectId("68ba849287ade2b145534223"), quantity: 1 }, { product_id: ObjectId("68ba849287ade2b145534224"), quantity: 1 }], total_amount: 28.98, payment_status: "paid", order_status: "processing", address_id: ObjectId("68ba849287ade2b145534306"), order_number: "ORD-2025-009", date: new ISODate("2025-09-15T10:00:00Z") },
+  { user_id: 4, items: [{ product_id: ObjectId("68ba849287ade2b145534225"), quantity: 2 }], total_amount: 35.98, payment_status: "pending", order_status: "processing", address_id: ObjectId("68ba849287ade2b145534307"), order_number: "ORD-2025-010", date: new ISODate("2025-09-16T13:30:00Z") },
+  { user_id: 1, items: [{ product_id: ObjectId("68ba849287ade2b145534226"), quantity: 1 }, { product_id: ObjectId("68ba849287ade2b145534227"), quantity: 1 }], total_amount: 36.98, payment_status: "paid", order_status: "processing", address_id: ObjectId("68ba849287ade2b145534308"), order_number: "ORD-2025-011", date: new ISODate("2025-09-17T08:00:00Z") },
+  { user_id: 5, items: [{ product_id: ObjectId("68ba849287ade2b145534228"), quantity: 1 }], total_amount: 21.99, payment_status: "paid", order_status: "delivered", address_id: ObjectId("68ba849287ade2b145534309"), order_number: "ORD-2025-012", date: new ISODate("2025-09-17T08:00:00Z") },
+  { user_id: 4, items: [{ product_id: ObjectId("68ba849287ade2b145534229"), quantity: 4 }], total_amount: 47.96, payment_status: "paid", order_status: "shipped", address_id: ObjectId("68ba849287ade2b145534310"), order_number: "ORD-2025-013", date: new ISODate("2025-09-18T15:00:00Z") }
 ]);
