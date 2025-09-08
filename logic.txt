@@ -1,16 +1,5 @@
-profile for user
-search bar for products
-products -- different weight for honey in different sizes for different product.
-delete the newsletter cause we don't have any mail server.
-uml domain class diagrm
-
-
-
-mongosh - 
-
-
 ========================================
-SQLite (Relational - for Auth & Admin)
+SQLite (Relational - for User & Addresses)
 ========================================
 
 User
@@ -20,10 +9,7 @@ User
 - first_name
 - last_name
 - phone_number
-- role (Admin | Member)
 - password
-- created_at
-- updated_at
 
 Address
 - id (PK)
@@ -38,66 +24,45 @@ Address
 - created_at
 - updated_at
 
-Payment
-- id (PK)
-- order_id (FK → Order._id in Mongo)
-- amount
-- date_paid
-- provider
-- transaction_ref
-- status
-
 ========================================
 MongoDB (Document - for Catalog & Orders)
 ========================================
 
-Category (collection: categories)
-- _id
+Category 
 - name
 - slug
 - description
-- parent_id (nullable, FK to Category._id)
+- parent_id (nullable)
 
-Product (collection: products)
-- _id
-- category_id (FK → Category._id)
+Product 
 - title
+- category_id 
 - slug
 - price
 - description
-- variants [ { size, type, stock } ]
 - images []
-- status (active | inactive)
-- created_at
+- status 
 - modified_at
 
-Review (collection: reviews)
-- _id
-- user_id (copy of User.id from SQL)
-- product_id (FK → Product._id)
+Review 
+- user_id 
+- product_id 
 - rating
 - comment
 - date
 
-Cart (collection: carts)
-- _id
-- user_id (copy of User.id from SQL)
-- items [
-    { product_id, variant_id, quantity, added_at }
-  ]
+Cart 
+- user_id 
+- items
 - total_amount
-- created_at
-- updated_at
 
-Order (collection: orders)
-- _id
-- user_id (copy of User.id from SQL)
-- items [ snapshot of products & prices ]
+Order 
+- user_id 
+- items 
 - total_amount
 - payment_status
 - order_status
 - description
-- address { embedded snapshot from SQL Address }
+- address_id
 - order_number
-- created_at
-- updated_at
+- date
