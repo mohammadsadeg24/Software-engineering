@@ -6,9 +6,14 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = config('SECRET_KEY', default='your-secret-key-here')
-DEBUG = config('DEBUG', default=True, cast=bool)
+# SECRET_KEY = config('SECRET_KEY', default='your-secret-key-here')
+# DEBUG = config('DEBUG', default=True, cast=bool)
 
+# Load .env
+load_dotenv(dotenv_path=Path(__file__).resolve().parent / ".env")
+
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "fallback-secret")
+DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
@@ -63,11 +68,15 @@ DATABASES = {
 
 # MongoDB Settings for localhost
 # MongoDB Settings - Local Development
+# MONGODB_SETTINGS = {
+#     'host': 'mongodb://localhost:27017',
+#     'db': 'honey_site'
+# }
+# MongoDB
 MONGODB_SETTINGS = {
-    'host': 'mongodb://localhost:27017',
-    'db': 'honey_site'
+    "host": os.getenv("MONGODB_HOST", "mongodb://localhost:27017"),
+    "db": os.getenv("MONGODB_DB", "honey_site"),
 }
-
 CORS_ALLOW_CREDENTIALS = True
 
 # Static files
