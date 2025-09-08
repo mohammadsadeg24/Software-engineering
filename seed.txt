@@ -1,0 +1,806 @@
+db.carts.insertMany([
+  {
+    user_id: ObjectId('68ba849287ade2b14553422a'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b14553421e'),
+        variant_id: null,
+        quantity: 1,
+        added_at: new ISODate('2025-09-11T12:00:00Z')
+      }
+    ],
+    total_amount: 19.99,
+    created_at: new ISODate('2025-09-11T12:00:00Z'),
+    updated_at: new ISODate('2025-09-11T12:00:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b14553422b'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b14553421f'),
+        variant_id: null,
+        quantity: 3,
+        added_at: new ISODate('2025-09-12T14:30:00Z')
+      }
+    ],
+    total_amount: 50.97,
+    created_at: new ISODate('2025-09-12T14:30:00Z'),
+    updated_at: new ISODate('2025-09-12T14:30:00Z')
+  }
+]);
+
+---
+
+db.categories.insertMany([
+  {
+    name: 'Manuka Honey',
+    slug: 'manuka-honey'
+  },
+  {
+    name: 'Organic Honey',
+    slug: 'organic-honey'
+  }
+]);
+
+---
+
+db.orders.insertMany([
+  {
+    user_id: ObjectId('68ba849287ade2b14553422a'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b14553421e'),
+        quantity: 1,
+        price: 19.99
+      }
+    ],
+    total_amount: 19.99,
+    payment_status: 'paid',
+    order_status: 'processing',
+    description: 'Buckwheat honey order',
+    address: {
+      street: '123 Pine St',
+      city: 'Townsville',
+      state: 'NY',
+      zip_code: '10001'
+    },
+    order_number: 'ORD-2025-005',
+    transaction_ref: 'TXN-MNO678',
+    created_at: new ISODate('2025-09-11T12:00:00Z'),
+    updated_at: new ISODate('2025-09-11T12:00:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b14553422b'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b14553421f'),
+        quantity: 3,
+        price: 16.99
+      }
+    ],
+    total_amount: 50.97,
+    payment_status: 'paid',
+    order_status: 'shipped',
+    description: 'Clover honey order',
+    address: {
+      street: '456 Birch Blvd',
+      city: 'Metropolis',
+      state: 'CA',
+      zip_code: '90210'
+    },
+    order_number: 'ORD-2025-006',
+    transaction_ref: 'TXN-PQR901',
+    created_at: new ISODate('2025-09-12T14:30:00Z'),
+    updated_at: new ISODate('2025-09-12T14:30:00Z')
+  }
+]);
+
+---
+
+db.products.insertMany([
+  {
+    title: 'Buckwheat Honey',
+    slug: 'buckwheat-honey',
+    category_id: ObjectId('68ba849287ade2b145534219'),
+    price: 19.99,
+    description: 'Dark, rich, and molasses-like buckwheat honey',
+    status: 'active',
+    created_at: new ISODate('2025-09-11T12:00:00Z'),
+    updated_at: new ISODate('2025-09-11T12:00:00Z')
+  },
+  {
+    title: 'Clover Honey',
+    slug: 'clover-honey',
+    category_id: ObjectId('68ba849287ade2b14553421a'),
+    price: 16.99,
+    description: 'Light and mild clover honey',
+    status: 'active',
+    created_at: new ISODate('2025-09-12T14:30:00Z'),
+    updated_at: new ISODate('2025-09-12T14:30:00Z')
+  }
+]);
+
+---
+
+    db.reviews.insertMany([
+    {
+        user_id: ObjectId('68ba849287ade2b14553422c'),
+        product_id: ObjectId('68ba849287ade2b14553421e'),
+        rating: 5,
+        comment: 'The flavor is strong and delicious!',
+        date: new ISODate('2025-09-11T12:00:00Z'),
+        created_at: new ISODate('2025-09-11T12:00:00Z'),
+        updated_at: new ISODate('2025-09-11T12:00:00Z')
+    },
+    {
+        user_id: ObjectId('68ba849287ade2b14553422d'),
+        product_id: ObjectId('68ba849287ade2b14553421f'),
+        rating: 4,
+        comment: 'Classic honey taste, can be used in anything.',
+        date: new ISODate('2025-09-12T14:30:00Z'),
+        created_at: new ISODate('2025-09-12T14:30:00Z'),
+        updated_at: new ISODate('2025-09-12T14:30:00Z')
+    }
+    ]);
+
+---    
+
+db.carts.insertMany([
+  {
+    user_id: ObjectId('68ba849287ade2b14553422e'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b145534220'),
+        variant_id: null,
+        quantity: 1,
+        added_at: new ISODate('2025-09-13T09:15:00Z')
+      },
+      {
+        product_id: ObjectId('68ba849287ade2b145534221'),
+        variant_id: null,
+        quantity: 2,
+        added_at: new ISODate('2025-09-13T09:20:00Z')
+      }
+    ],
+    total_amount: 32.97,
+    created_at: new ISODate('2025-09-13T09:15:00Z'),
+    updated_at: new ISODate('2025-09-13T09:20:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b14553422f'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b145534222'),
+        variant_id: null,
+        quantity: 3,
+        added_at: new ISODate('2025-09-14T11:45:00Z')
+      }
+    ],
+    total_amount: 59.97,
+    created_at: new ISODate('2025-09-14T11:45:00Z'),
+    updated_at: new ISODate('2025-09-14T11:45:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b145534230'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b145534223'),
+        variant_id: null,
+        quantity: 1,
+        added_at: new ISODate('2025-09-15T10:00:00Z')
+      },
+      {
+        product_id: ObjectId('68ba849287ade2b145534224'),
+        variant_id: null,
+        quantity: 1,
+        added_at: new ISODate('2025-09-15T10:05:00Z')
+      }
+    ],
+    total_amount: 28.98,
+    created_at: new ISODate('2025-09-15T10:00:00Z'),
+    updated_at: new ISODate('2025-09-15T10:05:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b145534231'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b145534225'),
+        variant_id: null,
+        quantity: 2,
+        added_at: new ISODate('2025-09-16T13:30:00Z')
+      }
+    ],
+    total_amount: 35.98,
+    created_at: new ISODate('2025-09-16T13:30:00Z'),
+    updated_at: new ISODate('2025-09-16T13:30:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b145534232'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b145534226'),
+        variant_id: null,
+        quantity: 1,
+        added_at: new ISODate('2025-09-17T08:00:00Z')
+      },
+      {
+        product_id: ObjectId('68ba849287ade2b145534227'),
+        variant_id: null,
+        quantity: 1,
+        added_at: new ISODate('2025-09-17T08:05:00Z')
+      }
+    ],
+    total_amount: 36.98,
+    created_at: new ISODate('2025-09-17T08:00:00Z'),
+    updated_at: new ISODate('2025-09-17T08:05:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b145534233'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b145534228'),
+        variant_id: null,
+        quantity: 1,
+        added_at: new ISODate('2025-09-18T15:00:00Z')
+      }
+    ],
+    total_amount: 21.99,
+    created_at: new ISODate('2025-09-18T15:00:00Z'),
+    updated_at: new ISODate('2025-09-18T15:00:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b145534234'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b145534229'),
+        variant_id: null,
+        quantity: 4,
+        added_at: new ISODate('2025-09-19T10:00:00Z')
+      }
+    ],
+    total_amount: 47.96,
+    created_at: new ISODate('2025-09-19T10:00:00Z'),
+    updated_at: new ISODate('2025-09-19T10:00:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b145534235'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b14553422a'),
+        variant_id: null,
+        quantity: 1,
+        added_at: new ISODate('2025-09-20T11:00:00Z')
+      }
+    ],
+    total_amount: 15.99,
+    created_at: new ISODate('2025-09-20T11:00:00Z'),
+    updated_at: new ISODate('2025-09-20T11:00:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b145534236'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b14553422b'),
+        variant_id: null,
+        quantity: 2,
+        added_at: new ISODate('2025-09-21T09:30:00Z')
+      }
+    ],
+    total_amount: 39.98,
+    created_at: new ISODate('2025-09-21T09:30:00Z'),
+    updated_at: new ISODate('2025-09-21T09:30:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b145534237'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b14553422c'),
+        variant_id: null,
+        quantity: 1,
+        added_at: new ISODate('2025-09-22T14:00:00Z')
+      },
+      {
+        product_id: ObjectId('68ba849287ade2b14553422d'),
+        variant_id: null,
+        quantity: 1,
+        added_at: new ISODate('2025-09-22T14:05:00Z')
+      }
+    ],
+    total_amount: 27.98,
+    created_at: new ISODate('2025-09-22T14:00:00Z'),
+    updated_at: new ISODate('2025-09-22T14:05:00Z')
+  }
+]);
+
+---
+
+db.categories.insertMany([
+  {
+    name: 'Specialty Honey',
+    slug: 'specialty-honey'
+  },
+  {
+    name: 'Creamed Honey',
+    slug: 'creamed-honey'
+  },
+  {
+    name: 'Monofloral Honey',
+    slug: 'monofloral-honey'
+  },
+  {
+    name: 'Honey Gifts',
+    slug: 'honey-gifts'
+  },
+  {
+    name: 'Honeycomb',
+    slug: 'honeycomb'
+  },
+  {
+    name: 'Honey Snacks',
+    slug: 'honey-snacks'
+  },
+  {
+    name: 'Baking Honey',
+    slug: 'baking-honey'
+  },
+  {
+    name: 'Cooking Honey',
+    slug: 'cooking-honey'
+  }
+]);
+
+
+---
+
+db.orders.insertMany([
+  {
+    user_id: ObjectId('68ba849287ade2b14553422e'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b145534220'),
+        quantity: 1,
+        price: 15.99
+      },
+      {
+        product_id: ObjectId('68ba849287ade2b145534221'),
+        quantity: 2,
+        price: 8.49
+      }
+    ],
+    total_amount: 32.97,
+    payment_status: 'paid',
+    order_status: 'shipped',
+    description: 'Acacia and Basswood honey order',
+    address: {
+      street: '101 Pine St',
+      city: 'Villageburg',
+      state: 'NY',
+      zip_code: '10001'
+    },
+    order_number: 'ORD-2025-007',
+    transaction_ref: 'TXN-ABC1234',
+    created_at: new ISODate('2025-09-13T09:15:00Z'),
+    updated_at: new ISODate('2025-09-13T09:15:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b14553422f'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b145534222'),
+        quantity: 3,
+        price: 19.99
+      }
+    ],
+    total_amount: 59.97,
+    payment_status: 'paid',
+    order_status: 'delivered',
+    description: 'Black Forest honey order',
+    address: {
+      street: '456 Oak St',
+      city: 'Riverside',
+      state: 'CA',
+      zip_code: '90010'
+    },
+    order_number: 'ORD-2025-008',
+    transaction_ref: 'TXN-DEF5678',
+    created_at: new ISODate('2025-09-14T11:45:00Z'),
+    updated_at: new ISODate('2025-09-14T11:45:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b145534230'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b145534223'),
+        quantity: 1,
+        price: 12.99
+      },
+      {
+        product_id: ObjectId('68ba849287ade2b145534224'),
+        quantity: 1,
+        price: 15.99
+      }
+    ],
+    total_amount: 28.98,
+    payment_status: 'paid',
+    order_status: 'processing',
+    description: 'Sourwood and Sage honey order',
+    address: {
+      street: '789 Maple St',
+      city: 'Lakeside',
+      state: 'TX',
+      zip_code: '75001'
+    },
+    order_number: 'ORD-2025-009',
+    transaction_ref: 'TXN-GHI9012',
+    created_at: new ISODate('2025-09-15T10:00:00Z'),
+    updated_at: new ISODate('2025-09-15T10:00:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b145534231'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b145534225'),
+        quantity: 2,
+        price: 17.99
+      }
+    ],
+    total_amount: 35.98,
+    payment_status: 'paid',
+    order_status: 'shipped',
+    description: 'Tupelo honey order',
+    address: {
+      street: '111 Cedar St',
+      city: 'Hillside',
+      state: 'WA',
+      zip_code: '98101'
+    },
+    order_number: 'ORD-2025-010',
+    transaction_ref: 'TXN-JKL3456',
+    created_at: new ISODate('2025-09-16T13:30:00Z'),
+    updated_at: new ISODate('2025-09-16T13:30:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b145534232'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b145534226'),
+        quantity: 1,
+        price: 24.99
+      },
+      {
+        product_id: ObjectId('68ba849287ade2b145534227'),
+        quantity: 1,
+        price: 11.99
+      }
+    ],
+    total_amount: 36.98,
+    payment_status: 'pending',
+    order_status: 'processing',
+    description: 'Manuka and Eucalyptus honey order',
+    address: {
+      street: '222 Birch St',
+      city: 'Sunnyside',
+      state: 'FL',
+      zip_code: '33101'
+    },
+    order_number: 'ORD-2025-011',
+    transaction_ref: 'TXN-MNO7890',
+    created_at: new ISODate('2025-09-17T08:00:00Z'),
+    updated_at: new ISODate('2025-09-17T08:00:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b145534233'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b145534228'),
+        quantity: 1,
+        price: 21.99
+      }
+    ],
+    total_amount: 21.99,
+    payment_status: 'paid',
+    order_status: 'delivered',
+    description: 'Creamed honey order',
+    address: {
+      street: '333 Elm St',
+      city: 'Greenville',
+      state: 'GA',
+      zip_code: '30301'
+    },
+    order_number: 'ORD-2025-012',
+    transaction_ref: 'TXN-PQR1234',
+    created_at: new ISODate('2025-09-18T15:00:00Z'),
+    updated_at: new ISODate('2025-09-18T15:00:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b145534234'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b145534229'),
+        quantity: 4,
+        price: 11.99
+      }
+    ],
+    total_amount: 47.96,
+    payment_status: 'paid',
+    order_status: 'shipped',
+    description: 'Bulk wildflower honey order',
+    address: {
+      street: '444 Pine St',
+      city: 'Maplewood',
+      state: 'IL',
+      zip_code: '60601'
+    },
+    order_number: 'ORD-2025-013',
+    transaction_ref: 'TXN-STU5678',
+    created_at: new ISODate('2025-09-19T10:00:00Z'),
+    updated_at: new ISODate('2025-09-19T10:00:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b145534235'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b14553422a'),
+        quantity: 1,
+        price: 15.99
+      }
+    ],
+    total_amount: 15.99,
+    payment_status: 'paid',
+    order_status: 'processing',
+    description: 'Acacia honey order',
+    address: {
+      street: '555 Oak St',
+      city: 'Centerville',
+      state: 'PA',
+      zip_code: '15201'
+    },
+    order_number: 'ORD-2025-014',
+    transaction_ref: 'TXN-VWX9012',
+    created_at: new ISODate('2025-09-20T11:00:00Z'),
+    updated_at: new ISODate('2025-09-20T11:00:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b145534236'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b14553422b'),
+        quantity: 2,
+        price: 19.99
+      }
+    ],
+    total_amount: 39.98,
+    payment_status: 'pending',
+    order_status: 'processing',
+    description: 'Black Forest honey order',
+    address: {
+      street: '666 Birch St',
+      city: 'Lakeview',
+      state: 'MI',
+      zip_code: '48101'
+    },
+    order_number: 'ORD-2025-015',
+    transaction_ref: 'TXN-YZA3456',
+    created_at: new ISODate('2025-09-21T09:30:00Z'),
+    updated_at: new ISODate('2025-09-21T09:30:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b145534237'),
+    items: [
+      {
+        product_id: ObjectId('68ba849287ade2b14553422c'),
+        quantity: 1,
+        price: 14.99
+      },
+      {
+        product_id: ObjectId('68ba849287ade2b14553422d'),
+        quantity: 1,
+        price: 12.99
+      }
+    ],
+    total_amount: 27.98,
+    payment_status: 'paid',
+    order_status: 'shipped',
+    description: 'Sage and buckwheat honey order',
+    address: {
+      street: '777 Elm St',
+      city: 'Riverbend',
+      state: 'OH',
+      zip_code: '45001'
+    },
+    order_number: 'ORD-2025-016',
+    transaction_ref: 'TXN-BCD7890',
+    created_at: new ISODate('2025-09-22T14:00:00Z'),
+    updated_at: new ISODate('2025-09-22T14:00:00Z')
+  }
+]);
+
+---
+
+db.products.insertMany([
+  {
+    title: 'Acacia Honey',
+    slug: 'acacia-honey',
+    category_id: ObjectId('68ba849287ade2b14553421e'),
+    price: 15.99,
+    description: 'Light-colored, floral acacia honey with a delicate flavor',
+    status: 'active',
+    created_at: new ISODate('2025-09-13T09:15:00Z'),
+    updated_at: new ISODate('2025-09-13T09:15:00Z')
+  },
+  {
+    title: 'Basswood Honey',
+    slug: 'basswood-honey',
+    category_id: ObjectId('68ba849287ade2b14553421f'),
+    price: 8.49,
+    description: 'Strong, minty basswood honey from Minnesota',
+    status: 'active',
+    created_at: new ISODate('2025-09-13T09:15:00Z'),
+    updated_at: new ISODate('2025-09-13T09:15:00Z')
+  },
+  {
+    title: 'Black Forest Honey',
+    slug: 'black-forest-honey',
+    category_id: ObjectId('68ba849287ade2b145534220'),
+    price: 19.99,
+    description: 'Dark, rich, and tangy honey from the Black Forest region',
+    status: 'active',
+    created_at: new ISODate('2025-09-14T11:45:00Z'),
+    updated_at: new ISODate('2025-09-14T11:45:00Z')
+  },
+  {
+    title: 'Sourwood Honey',
+    slug: 'sourwood-honey',
+    category_id: ObjectId('68ba849287ade2b145534221'),
+    price: 12.99,
+    description: 'Unique, buttery sourwood honey from the Appalachian Mountains',
+    status: 'active',
+    created_at: new ISODate('2025-09-15T10:00:00Z'),
+    updated_at: new ISODate('2025-09-15T10:00:00Z')
+  },
+  {
+    title: 'Sage Honey',
+    slug: 'sage-honey',
+    category_id: ObjectId('68ba849287ade2b145534222'),
+    price: 15.99,
+    description: 'Light, delicate sage honey with a mild flavor',
+    status: 'active',
+    created_at: new ISODate('2025-09-15T10:00:00Z'),
+    updated_at: new ISODate('2025-09-15T10:00:00Z')
+  },
+  {
+    title: 'Tupelo Honey',
+    slug: 'tupelo-honey',
+    category_id: ObjectId('68ba849287ade2b145534223'),
+    price: 17.99,
+    description: 'Premium Tupelo honey with a unique, non-crystallizing quality',
+    status: 'active',
+    created_at: new ISODate('2025-09-16T13:30:00Z'),
+    updated_at: new ISODate('2025-09-16T13:30:00Z')
+  },
+  {
+    title: 'Manuka Honey',
+    slug: 'manuka-honey',
+    category_id: ObjectId('68ba849287ade2b145534224'),
+    price: 24.99,
+    description: 'Authentic Manuka honey with a rich, earthy flavor',
+    status: 'active',
+    created_at: new ISODate('2025-09-17T08:00:00Z'),
+    updated_at: new ISODate('2025-09-17T08:00:00Z')
+  },
+  {
+    title: 'Eucalyptus Honey',
+    slug: 'eucalyptus-honey',
+    category_id: ObjectId('68ba849287ade2b145534225'),
+    price: 11.99,
+    description: 'Strong, slightly menthol-flavored eucalyptus honey',
+    status: 'active',
+    created_at: new ISODate('2025-09-17T08:00:00Z'),
+    updated_at: new ISODate('2025-09-17T08:00:00Z')
+  },
+  {
+    title: 'Creamed Cinnamon Honey',
+    slug: 'creamed-cinnamon-honey',
+    category_id: ObjectId('68ba849287ade2b145534226'),
+    price: 21.99,
+    description: 'Smooth, creamy honey infused with cinnamon',
+    status: 'active',
+    created_at: new ISODate('2025-09-18T15:00:00Z'),
+    updated_at: new ISODate('2025-09-18T15:00:00Z')
+  }
+]);
+
+---
+
+db.reviews.insertMany([
+  {
+    user_id: ObjectId('68ba849287ade2b145534238'),
+    product_id: ObjectId('68ba849287ade2b145534220'),
+    rating: 5,
+    comment: 'Rich and dark, perfect for toast.',
+    date: new ISODate('2025-09-13T09:15:00Z'),
+    created_at: new ISODate('2025-09-13T09:15:00Z'),
+    updated_at: new ISODate('2025-09-13T09:15:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b145534239'),
+    product_id: ObjectId('68ba849287ade2b145534221'),
+    rating: 4,
+    comment: 'Minty and refreshing, great in tea.',
+    date: new ISODate('2025-09-13T09:20:00Z'),
+    created_at: new ISODate('2025-09-13T09:20:00Z'),
+    updated_at: new ISODate('2025-09-13T09:20:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b14553423a'),
+    product_id: ObjectId('68ba849287ade2b145534222'),
+    rating: 5,
+    comment: 'Authentic and delicious, love the tangy flavor.',
+    date: new ISODate('2025-09-14T11:45:00Z'),
+    created_at: new ISODate('2025-09-14T11:45:00Z'),
+    updated_at: new ISODate('2025-09-14T11:45:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b14553423b'),
+    product_id: ObjectId('68ba849287ade2b145534223'),
+    rating: 4,
+    comment: 'Buttery and smooth, perfect for baking.',
+    date: new ISODate('2025-09-15T10:00:00Z'),
+    created_at: new ISODate('2025-09-15T10:00:00Z'),
+    updated_at: new ISODate('2025-09-15T10:00:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b14553423c'),
+    product_id: ObjectId('68ba849287ade2b145534224'),
+    rating: 5,
+    comment: 'Subtle and sweet, great for a light drizzle.',
+    date: new ISODate('2025-09-15T10:05:00Z'),
+    created_at: new ISODate('2025-09-15T10:05:00Z'),
+    updated_at: new ISODate('2025-09-15T10:05:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b14553423d'),
+    product_id: ObjectId('68ba849287ade2b145534225'),
+    rating: 5,
+    comment: 'The best honey I have ever had. Non-crystallizing is a huge plus.',
+    date: new ISODate('2025-09-16T13:30:00Z'),
+    created_at: new ISODate('2025-09-16T13:30:00Z'),
+    updated_at: new ISODate('2025-09-16T13:30:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b14553423e'),
+    product_id: ObjectId('68ba849287ade2b145534226'),
+    rating: 4,
+    comment: 'Excellent quality, you can taste the authenticity.',
+    date: new ISODate('2025-09-17T08:00:00Z'),
+    created_at: new ISODate('2025-09-17T08:00:00Z'),
+    updated_at: new ISODate('2025-09-17T08:00:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b14553423f'),
+    product_id: ObjectId('68ba849287ade2b145534227'),
+    rating: 3,
+    comment: 'The flavor is a bit strong for me, but it is good for medicinal purposes.',
+    date: new ISODate('2025-09-17T08:05:00Z'),
+    created_at: new ISODate('2025-09-17T08:05:00Z'),
+    updated_at: new ISODate('2025-09-17T08:05:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b145534240'),
+    product_id: ObjectId('68ba849287ade2b145534228'),
+    rating: 5,
+    comment: 'My new favorite! The cinnamon and creamed texture are perfect.',
+    date: new ISODate('2025-09-18T15:00:00Z'),
+    created_at: new ISODate('2025-09-18T15:00:00Z'),
+    updated_at: new ISODate('2025-09-18T15:00:00Z')
+  },
+  {
+    user_id: ObjectId('68ba849287ade2b145534241'),
+    product_id: ObjectId('68ba849287ade2b145534229'),
+    rating: 5,
+    comment: 'Classic and reliable. Great for everyday use.',
+    date: new ISODate('2025-09-19T10:00:00Z'),
+    created_at: new ISODate('2025-09-19T10:00:00Z'),
+    updated_at: new ISODate('2025-09-19T10:00:00Z')
+  }
+]);
