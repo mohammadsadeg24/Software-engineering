@@ -70,10 +70,10 @@ DATABASES = {
     }
 }
 
-# MongoDB Settings
+# MongoDB
 MONGODB_SETTINGS = {
-    'host': 'mongodb://localhost:27017',
-    'db': 'honey_site'
+    "host": os.getenv("MONGODB_HOST", "mongodb://localhost:27017"),
+    "db": os.getenv("MONGODB_DB", "honey_site"),
 }
 
 # CORS Settings - Fixed the typo and made more secure

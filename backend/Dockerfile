@@ -26,7 +26,7 @@ RUN python manage.py collectstatic --noinput || true
 EXPOSE 8000
 
 # Seed initial data
-RUN python seed_data.py
+# RUN python seed_data.py
 
 # Use gunicorn for production
 CMD ["gunicorn", "honey_site.wsgi:application", "--bind", "0.0.0.0:8000"]
