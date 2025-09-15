@@ -7,9 +7,17 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY', default='your-secret-key-here')
-DEBUG = config('DEBUG', default=True, cast=bool)
-
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+# DEBUG = config('DEBUG', default=False, cast=bool)  # Set to False for production
+DEBUG = True  # Set to False for production
+# Add your server's domain/IP and any domains that will access your API
+ALLOWED_HOSTS = [
+    '0.0.0.0', 
+    'localhost', 
+    '127.0.0.1',
+    '0.0.0.0',  # Your server IP
+    'yourdomain.com',  # Add your domain if you have one
+    'www.yourdomain.com'
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -32,6 +40,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = 'honey_site.urls'
@@ -61,19 +70,39 @@ DATABASES = {
     }
 }
 
-# MongoDB Settings for localhost
-# MongoDB Settings - Local Development
+# MongoDB Settings
 MONGODB_SETTINGS = {
     'host': 'mongodb://localhost:27017',
     'db': 'honey_site'
 }
 
+# CORS Settings - Fixed the typo and made more secure
 CORS_ALLOW_CREDENTIALS = True
+
+# For development - allows all origins (less secure)
+# CORS_ALLOW_ALL_ORIGINS = True
+
+# For production - specify exact origins that should access your API
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # React dev server
+    "http://127.0.0.1:3000",
+    "http://localhost:8080",  # Vue dev server
+    "https://yourdomain.com",  # Your production frontend
+    "https://www.yourdomain.com",
+    f"http://65.109.218.152:8000",  # Your server
+    f"https://65.109.218.152:8000",
+]
+
 
 # Static files
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+STATIC_ROOT = BASE_DIR / 'static'  # Where collectstatic puts files
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# Static files finders (optional - Django uses these by default)
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
 
 # Media files
